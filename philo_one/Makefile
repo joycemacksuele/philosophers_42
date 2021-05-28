@@ -6,7 +6,7 @@
 #    By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/19 00:38:15 by jfreitas          #+#    #+#              #
-#    Updated: 2021/05/08 02:51:17 by jfreitas         ###   ########.fr        #
+#    Updated: 2021/05/22 02:46:22 by jfreitas         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,7 +33,7 @@ endif
 
 ##### FLAG #####
 CC = clang
-FLAGS = -Wall -Wextra -Werror -g -pthread# -fsanitize=address
+FLAGS = -Wall -Wextra -Werror -g -pthread# -fsanitize=address -fsanitize=thread
 
 ##### SRC & OBJ PATH #####
 UTILSPATH = ../philo_one/srcs

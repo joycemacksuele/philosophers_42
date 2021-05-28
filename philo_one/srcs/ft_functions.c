@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/07 03:47:46 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/05/07 03:48:07 by jfreitas         ###   ########.fr       */
+/*   Updated: 2021/05/11 01:32:46 by jfreitas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,3 +35,17 @@ int	ft_atoi(char const *str)
 	}
 	return (res * neg);
 }
+
+int	ft_strcmp(char const *s1, char const *s2)
+{
+	while ((*s1 && *s2) && *s1 == *s2)
+	{
+		s1++;
+		s2++;
+	}
+	if (*s1 == *s2)
+		return (0);
+	else
+		return (*((unsigned char *)s1) - *((unsigned char *)s2));
+}
+

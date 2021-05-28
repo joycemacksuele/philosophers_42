@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 02:13:33 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/05/08 03:23:20 by jfreitas         ###   ########.fr       */
+/*   Updated: 2021/05/28 03:54:33 by jfreitas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,44 +25,78 @@
 # include <sys/types.h>
 # include <signal.h>
 
-typedef struct s_philo
+# define FAIL -1
+# define SUCCESS 0
+
+/*typedef struct s_args
 {
-	pthread_t		pt;
-	pthread_mutex_t	*fork;
+	int				dt;
 	unsigned long	start_time;
-	int				nb;
+	pthread_mutex_t	*forks;
+	int				nb_philos;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				times_philo_must_eat;
+}					t_args;*/
+
+typedef struct s_philo
+{
+	pthread_t		thread;
+	//pthread_mutex_t	*forks;
+	int				position;
+	int				left_fork;
+	int				right_fork;
+	int				index;
+
+	int				dt;
+	unsigned long	start_time;
+	pthread_mutex_t	forks;
+	int				nb_philos;
+	int				time_to_die;
+	int				time_to_eat;
+	int				time_to_sleep;
+	int				times_philo_must_eat;
+
+//	t_args			*args;
 }					t_philo;
+
 
 /*
  * initialization of struc/mutex/pthreads
  */
-void	init_args(t_philo *philo, char **argv);
-void	init_mutex_fork(t_philo *philo);
-void	init_pthread_philos(t_philo *philo);
+void			init_args(t_philo *philo, /*t_args *args, */char **argv);
+void			init_args_dt(t_philo *philo, /*t_args *args, */char **argv);
+void			init_mutex_fork(t_philo *philo);//, t_args *args);
+int				init_pthread_philos(t_philo *philo);//, t_args *args);
 
 /*
  * Philosophers actios
  */
-void	*philo_actions(void *actions);
-void	philo_eat(t_philo *philo);
+void			*tf_philo_actions(void *actions);
+void			philo_eat(t_philo *philo);
 
 /*
  * time
  */
 unsigned long	get_time(void);
+unsigned long	get_diff_time(unsigned long start_time);
 
 /*
  * UTILS
  */
-int	ft_atoi(char const *str);
+
+/*
+ * functions copied from libft
+ */
+int				ft_atoi(char const *str);
+int				ft_strcmp(char const *s1, char const *s2);
+
 
 /*
  * Errors
  */
+void			error_msg(char *err_msg);
 
 
 #endif
