@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:25:38 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/05/28 04:04:08 by jfreitas         ###   ########.fr       */
+/*   Updated: 2021/06/01 02:34:28 by jfreitas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,23 +22,23 @@
  *	whithe the index of the structure as it's only paramenter.
  */
 
-int	init_pthread_philos(t_philo *philo)//, t_args *args)
+int	init_pthread_philos(t_philo *philo, t_args *args)
 {
-//	int	i;
+	int	i;
 
-//	i = 1;
-	printf("INDEX = %d\n", philo[0].index);
-	printf("NB TOTAL PHILOS = %d\n", philo[0].nb_philos);
-	while (philo[0].index < philo[0].nb_philos)
+	i = 0;
+//	printf("INDEX = %d\n", philo[0].index);
+	printf("NB TOTAL PHILOS = %d\n", args->nb_philos);
+	while (i < args->nb_philos && args->time_to_die >= 0)
 	{
-		if (pthread_create(&philo[philo[0].index].thread, NULL,
-			tf_philo_actions, philo) != 0)
+		philo[i].args = args;
+		if (pthread_create(&philo[i].thread, NULL, tf_philo_actions,
+			&philo[i]) != 0)
 			return (FAIL);
 		printf("thread created\n");
-	//	i++;
-		philo[0].index++;
+		i++;
+		//philo[0].index++;
 	}
-
 	return (SUCCESS);
 }
 
@@ -50,48 +50,78 @@ int	init_pthread_philos(t_philo *philo)//, t_args *args)
  *										const pthread_mutexattr_t *mutexattr);
  */
 
-void	init_mutex_fork(t_philo *philo)//, t_args *args)// have yo initialize SECOND FORK
+void	init_mutex_fork(t_philo *philo, t_args *args)// have yo initialize SECOND FORK
 {
 	int	i;
 
-	i = 1;
-//	philo->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) *
-//		philo->nb_philos);
-//	if (philo->forks == NULL)
-//		return ;
-	while (i <= philo[0].nb_philos)
+	(void)philo;
+	i = 0;
+	args->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) *
+		args->nb_philos);
+	if (args->forks == NULL)
+		return ;
+	while (i < args->nb_philos)
 	{
-		pthread_mutex_init(&philo[i].forks, NULL);
+		pthread_mutex_init(&args->forks[i], NULL);
 		printf("mutex initialized\n");
 		i++;
 	}
 }
 
-void	init_forks(t_philo *philo, int i)
+void	init_forks(t_philo *philo, t_args *args, int i)
 {
-	int	total;
+	int	total_philos;
 
-	total = philo[0].nb_philos;
-	if (i == 1)// philo->nb == 1
+	total_philos = args->nb_philos;
+	if (i == 0)// philo->nb == 1
 	{
-		philo[i].left_fork = i;
-		philo[i].right_fork = philo[0].nb_philos;
-
+		philo[i].left_fork = i + 1;
+		philo[i].right_fork = total_philos;
 	}
-	else if (i == philo[0].nb_philos)// philo->nb == philo->total
+	else if (i == total_philos - 1)// philo->nb == philo->total
 	{
-		philo[i].left_fork = philo[0].nb_philos;
+		philo[i].left_fork = total_philos;
 		philo[i].right_fork = i - 1;
 	}
 	else
 	{
-		philo[i].left_fork = i;
-		philo[i].right_fork = i - 1;
+		philo[i].left_fork = i + 1;
+		philo[i].right_fork = i;
 	}
 }
 
-void	init_args_dt(t_philo *philo, char **argv)
+void	init_args_dt(t_philo *philo, t_args *args, char **argv)
 {
+	int	i;
+	i = 0;
+	args->dt = 1;
+	args->start_time = get_time();
+	args->nb_philos = ft_atoi(argv[2]);
+	//philo[0].index = 1;
+	args->time_to_die = ft_atoi(argv[3]);
+	args->time_to_eat = ft_atoi(argv[4]);
+	args->time_to_sleep = ft_atoi(argv[5]);
+	while (i < args->nb_philos)
+	{
+		philo[i].position = i + 1;
+		init_forks(philo, args, i);
+		printf("		nb[%d] = %d\nleft_fork = %d\nright_fork = %d\n", i, philo[i].position, philo[i].left_fork, philo[i].right_fork);
+		i++;
+	}
+	if (argv[6])
+		args->times_philo_must_eat = ft_atoi(argv[6]);
+	else
+		args->times_philo_must_eat = 0;
+	if (args->nb_philos < 2 || args->time_to_die < 0 ||
+		args->time_to_eat < 0 || args->time_to_sleep < 0 ||
+		args->times_philo_must_eat < 0)
+		return ;
+// TEST
+	printf(">>>> args = %d, %d, %d, %d, %d <<<<\n\n", args->nb_philos, args->time_to_die, args->time_to_eat, args->time_to_sleep, args->times_philo_must_eat);
+	printf("START_TIME = %ld\n", args->start_time);
+// TEST
+}
+/*{
 	int	i;
 
 	i = 0;
@@ -121,12 +151,47 @@ void	init_args_dt(t_philo *philo, char **argv)
 // TEST
 //	printf(">>>> args = %d, %d, %d, %d, %d <<<<\n\n", args->nb_philos, args->time_to_die, args->time_to_eat, args->time_to_sleep, args->times_philo_must_eat);
 // TEST
+}*/
+
+void	init_args(t_philo *philo, t_args *args, char **argv)
+{
+	//t_forks	forks;
+	int	i;
+	i = 0;
+	//if ((philo->thread = (pthread_t *)malloc(sizeof(pthread_t) * ft_atoi(argv[1]))) == NULL)
+	//	return ;
+	args->dt = 0;
+	args->start_time = get_time();
+	args->nb_philos = ft_atoi(argv[1]);
+	//philo[0].index = 1;
+	args->time_to_die = ft_atoi(argv[2]);
+	args->time_to_eat = ft_atoi(argv[3]);
+	args->time_to_sleep = ft_atoi(argv[4]);
+	while (i < args->nb_philos)
+	{
+		philo[i].position = i + 1;
+		init_forks(philo, args, i);
+		printf("		nb[%d] = %d\nleft_fork = %d\nright_fork = %d\n", i, philo[i].position, philo[i].left_fork, philo[i].right_fork);
+		i++;
+	}
+	if (argv[5])
+		args->times_philo_must_eat = ft_atoi(argv[5]);
+	else
+		args->times_philo_must_eat = 0;
+	if (args->nb_philos < 2 || args->time_to_die < 0 ||
+		args->time_to_eat < 0 || args->time_to_sleep < 0 ||
+		args->times_philo_must_eat < 0)
+		return ;
+// TEST
+	printf(">>>> args = %d, %d, %d, %d, %d <<<<\n\n", args->nb_philos, args->time_to_die, args->time_to_eat, args->time_to_sleep, args->times_philo_must_eat);
+	printf("START_TIME = %ld\n", args->start_time);
+// TEST
 }
 
-void	init_args(t_philo *philo, char **argv)
+/*void	init_args(t_philo *philo, t_args *args, char **argv)
 {
+	t_forks	forks;
 	int	i;
-
 	i = 1;
 	//if ((philo->thread = (pthread_t *)malloc(sizeof(pthread_t) * ft_atoi(argv[1]))) == NULL)
 	//	return ;
@@ -140,7 +205,7 @@ void	init_args(t_philo *philo, char **argv)
 	while (i <= philo[0].nb_philos)
 	{
 		philo[i].position = i;
-		init_forks(philo, i);
+		init_forks(philo, &forks, i);
 		printf("		nb[%d] = %d\nleft_fork = %d\nright_fork = %d\n", i, philo[i].position, philo[i].left_fork, philo[i].right_fork);
 		i++;
 	}
@@ -156,4 +221,4 @@ void	init_args(t_philo *philo, char **argv)
 	printf(">>>> args = %d, %d, %d, %d, %d <<<<\n\n", philo[0].nb_philos, philo[0].time_to_die, philo[0].time_to_eat, philo[0].time_to_sleep, philo[0].times_philo_must_eat);
 	printf("START_TIME = %ld\n", philo[0].start_time);
 // TEST
-}
+}*/

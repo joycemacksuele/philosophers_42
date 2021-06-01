@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 02:13:33 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/05/28 03:54:33 by jfreitas         ###   ########.fr       */
+/*   Updated: 2021/05/31 20:34:15 by jfreitas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 # define FAIL -1
 # define SUCCESS 0
 
-/*typedef struct s_args
+typedef struct s_args
 {
 	int				dt;
 	unsigned long	start_time;
@@ -38,37 +38,26 @@
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				times_philo_must_eat;
-}					t_args;*/
+}					t_args;
 
 typedef struct s_philo
 {
 	pthread_t		thread;
-	//pthread_mutex_t	*forks;
 	int				position;
 	int				left_fork;
 	int				right_fork;
 	int				index;
-
-	int				dt;
-	unsigned long	start_time;
-	pthread_mutex_t	forks;
-	int				nb_philos;
-	int				time_to_die;
-	int				time_to_eat;
-	int				time_to_sleep;
-	int				times_philo_must_eat;
-
-//	t_args			*args;
+	t_args			*args;
 }					t_philo;
 
 
 /*
  * initialization of struc/mutex/pthreads
  */
-void			init_args(t_philo *philo, /*t_args *args, */char **argv);
-void			init_args_dt(t_philo *philo, /*t_args *args, */char **argv);
-void			init_mutex_fork(t_philo *philo);//, t_args *args);
-int				init_pthread_philos(t_philo *philo);//, t_args *args);
+void			init_args(t_philo *philo, t_args *args, char **argv);
+void			init_args_dt(t_philo *philo, t_args *args, char **argv);
+void			init_mutex_fork(t_philo *philo, t_args *args);
+int				init_pthread_philos(t_philo *philo, t_args *args);
 
 /*
  * Philosophers actios

@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:30:55 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/05/27 03:59:15 by jfreitas         ###   ########.fr       */
+/*   Updated: 2021/06/01 02:10:14 by jfreitas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,17 @@
  * destroyroyng all mutex created and freeing any memory allocated.
  */
 
-void	free_destroy(t_philo *philo)//, t_args *args)
+void	free_destroy(t_philo *philo, t_args *args)
 {
 	int	i;
 
+	(void)philo;
 	i = 1;
 //	pthread_mutex_destroy(philo->fork);// why only one destroy???
-	//free(philo->forks);
-	while (i <= philo[0].nb_philos)
+	free(args->forks);
+	while (i < args->nb_philos)
 	{
-		pthread_mutex_destroy(&philo[i].forks);
+		pthread_mutex_destroy(&args->forks[i]);
 		i++;
 	}
 //	free(philo);
@@ -37,12 +38,12 @@ void	free_destroy(t_philo *philo)//, t_args *args)
  * released.
  */
 
-void	terminate_threads(t_philo *philo)//, t_args *args)
+void	terminate_threads(t_philo *philo, t_args *args)
 {
 	int	i;
 
 	i = 1;
-	while (i <= philo[0].nb_philos)
+	while (i <= args->nb_philos)
 		pthread_join(philo[i].thread, NULL);//do an if, in case it fails
 }
 
@@ -58,22 +59,23 @@ void	error_msg(char *err_msg)
 int	main(int argc, char **argv)
 {
 	t_philo	philo;
-//	t_args	args;
+	t_args	args;
 
 	if (argc == 5 || argc == 6 || argc == 7)
 	{
-		init_mutex_fork(&philo);//, &args);
 		// NEED MORE MUTEX? FOR WHEN WRITING ON STDOUT/DISPLAY OR FOR WHEN A PHILO IS EATING
 		if (ft_strcmp(argv[1], "-dt") == 0)
-			init_args_dt(&philo, argv);
+			init_args_dt(&philo, &args, argv);
 		else
-			init_args(&philo, argv);
+			init_args(&philo, &args, argv);
 
-		printf("dt == %d\n", philo.dt);
-		if (init_pthread_philos(&philo) == FAIL)
+		init_mutex_fork(&philo, &args);
+
+		printf("dt == %d\n", args.dt);
+		if (init_pthread_philos(&philo, &args) == FAIL)
 			error_msg("The thread could not be created");
-		terminate_threads(&philo);//, &args);
-		free_destroy(&philo);//, &args);
+		terminate_threads(&philo, &args);
+		free_destroy(&philo, &args);
 	}
 	return (0);
 }
