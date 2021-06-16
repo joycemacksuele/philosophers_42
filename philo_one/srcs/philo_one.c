@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/06 22:32:42 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/06/01 03:43:43 by jfreitas         ###   ########.fr       */
+/*   Updated: 2021/06/09 15:31:17 by jfreitas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,32 +16,39 @@ void	print_status(t_philo *philo,  char *action)
 {
 	unsigned int diff_time;
 
-	printf("%ld philo(%d) %s", get_time(), philo->position, action);
-	if (philo->args->dt == 1)
+	if (philo->one_philo_died == 0)
 	{
-		diff_time = get_diff_time(philo->args->start_time);
-		printf(" | ms from last status = %d", diff_time);
+		printf("| %ld | philo %d | %s \n", get_time(), philo->position, action);
+		if (philo->args->dt == 1)
+		{
+			diff_time = get_diff_time(philo->start_time);
+			printf(" ms from last status = %d\n", diff_time);
+		}
 	}
-	printf("\n");
 }
 
 /*
  *
  */
 
-void	philo_takes_fork(t_philo *philo)//, t_args *args)
+void	philo_eats(t_philo *philo, t_args *args)
 {
-	pthread_mutex_lock(&philo->args->forks[philo->left_fork]);//LEAK AQUI
-	print_status(philo, "has taken a fork (left fork)");
+	pthread_mutex_lock(&philo->fork_left);
+	pthread_mutex_lock(&philo->fork_right);
+	pthread_mutex_lock(&philo->printf);
+	print_status(philo, "has taken a fork (left fork)      |");
+	print_status(philo, "has taken a fork (right fork)     |");
+	print_status(philo, "is eating                         |");
 
-	pthread_mutex_lock(&philo->args->forks[philo->right_fork]);
-	print_status(philo, "has taken a fork (right fork)");
+//	printf("left_fork = %d ------ ", *philo->fork_left);
+//	printf("right_fork = %d\n", &philo->fork_right);
 
-	printf("left_fork = %d ------ ", philo->left_fork);
-	printf("right_fork = %d\n", philo->right_fork);
+	philo->last_meal_time = get_time();
+	usleep(args->time_to_eat * ONE_MS);// here the philo is eating time_to_eat milliseconds
+	pthread_mutex_unlock(&philo->printf);
+	pthread_mutex_unlock(&philo->fork_left);
+	pthread_mutex_unlock(&philo->fork_right);
 
-	pthread_mutex_unlock(&philo->args->forks[philo->left_fork]);
-	pthread_mutex_unlock(&philo->args->forks[philo->right_fork]);
 }
 
 /*
@@ -49,19 +56,23 @@ void	philo_takes_fork(t_philo *philo)//, t_args *args)
  * considered dead
  */
 
-void	check_if_dead(t_philo *philo)//, t_args *args)
+void	check_if_dead(t_philo *philo, t_args *args)
 {
-	unsigned long diff_time;
+	//unsigned long diff_time;
+	unsigned long current_time;
+//	diff_time = get_diff_time(philo->start_time);
 
-	diff_time = get_diff_time(philo->args->start_time);
-
-	printf("diff time = %d\n\n", (int)diff_time);
-
-	if (diff_time > (unsigned long)philo->args->time_to_die)
+	current_time = get_time();
+/*	printf("  start time = %ld\n", philo->start_time);
+	printf("  current time = %ld\n", current_time);
+	printf("  last meal time = %ld\n", philo->last_meal_time);
+	printf("  current time - last meal time = %ld\n", current_time - philo->last_meal_time);
+	printf("TIME TO DIE = %d\n", args->time_to_die);*/
+	usleep(args->time_to_die * ONE_MS);
+	if (current_time - philo->last_meal_time >= (unsigned long)args->time_to_die)// 10ms a mais e permitido nao como esta agora
 	{
-		print_status(philo, "died");
-		philo->args->time_to_die = -1;
-		printf("TIME TO DIE = %d\n", philo->args->time_to_die);
+		print_status(philo, COLOR_RED"died"COLOR_RESET);
+		philo->one_philo_died = -1;
 	}
 }
 
@@ -81,22 +92,22 @@ void	check_if_dead(t_philo *philo)//, t_args *args)
 void	*tf_philo_actions(void *actions)
 {
 	t_philo	*philo;
-//	t_args	*args;
+	t_args	*args;
+	int		i;
 
+	i = 0;
 	philo = (t_philo*)actions;
+	args = philo->args;
+	//printf("TIME TO DIE = %d\n", args->time_to_die);
 
-	printf("TIME TO DIE = %d\n", philo->args->time_to_die);
-	printf("  start time = %ld\n", philo->args->start_time);
-	printf("current time = %ld\n", get_time());
-
-	while (philo->args->time_to_die >= 0)
+	while (philo->one_philo_died == 0)
 	{
-		check_if_dead(philo);//, args);
-		if (philo->args->time_to_die >= 0)
-			philo_takes_fork(philo);//, args);
+		check_if_dead(philo, args);
+		philo_eats(philo, args);
 		//philo_eat(philo);
 		//philo_sleep(philo);
 		//philo_think(philo);
+		i++;
 	}
 	return (NULL);
 }
