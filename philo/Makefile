@@ -6,11 +6,11 @@
 #    By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/19 00:38:15 by jfreitas          #+#    #+#              #
-#    Updated: 2021/05/22 02:46:22 by jfreitas         ###   ########.fr        #
+#    Updated: 2021/06/25 22:40:12 by whoami           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = philo_one
+NAME = philo
 
 ##### COLORS #####
 WHITE = \033[1;37m
@@ -33,10 +33,10 @@ endif
 
 ##### FLAG #####
 CC = clang
-FLAGS = -Wall -Wextra -Werror -g -pthread# -fsanitize=address -fsanitize=thread
+FLAGS = -Wall -Wextra -Werror -g -pthread -fsanitize=address #-fsanitize=thread
 
 ##### SRC & OBJ PATH #####
-UTILSPATH = ../philo_one/srcs
+UTILSPATH = ../philo/srcs
 SRCPATH = ./srcs
 OBJPATH = $(SRCPATH)/objs
 
@@ -48,7 +48,7 @@ INC_PHILO_ONE = ./includes
 INC_DEP = $(INC_PHILO_ONE)/*.h
 
 ##### SOURCES #####
-SRCS = $(addprefix $(SRCPATH)/, main.c philo_one.c init.c time.c)
+SRCS = $(addprefix $(SRCPATH)/, main.c philo.c init.c time.c print.c)
 UTILS = $(addprefix $(UTILSPATH)/, ft_functions.c)
 
 ##### OBJECTS #####

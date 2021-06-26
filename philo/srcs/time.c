@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:22:32 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/05/21 03:24:29 by jfreitas         ###   ########.fr       */
+/*   Updated: 2021/06/25 22:31:30 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ unsigned long	get_diff_time(unsigned long start_time)//later can be changed to p
 	struct timeval	time;
 	unsigned long	ms_time;
 
-	//usleep(10000);
 	gettimeofday(&time, NULL);
 	ms_time = ((time.tv_sec * 1000) + (time.tv_usec / 1000));
 // TEST
@@ -56,7 +55,7 @@ unsigned long	get_diff_time(unsigned long start_time)//later can be changed to p
  *		 1 millisecond = 1 microsecond / 1000
  */
 
-unsigned long	get_time(void)
+unsigned long	get_current_time(void)
 {
 	struct timeval	time;
 

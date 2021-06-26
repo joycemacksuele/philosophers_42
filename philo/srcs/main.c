@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:30:55 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/06/09 15:18:28 by jfreitas         ###   ########.fr       */
+/*   Updated: 2021/06/25 23:30:51 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,27 +19,29 @@
  *			5 800 200 200
  */
 
-
 /*
  * destroyroyng all mutex created and freeing any memory allocated.
  */
 
-void	free_destroy(t_philo *philo, t_args *args)
+void	free_destroy(t_philo *philo, int nb_philos)
 {
 	int	i;
 
 	(void)philo;
 	i = 0;
 	//args = philo->args;
-	printf("NB FILOS DENTRO FREE DESTRY = %d\n", args->nb_philos);
-	while (i < args->nb_philos)
+	printf("NB FILOS DENTRO FREE DESTRY = %d\n", nb_philos);
+	pthread_mutex_destroy(&philo->print_action);
+	pthread_mutex_destroy(&philo->check_death);
+	while (i < nb_philos)
 	{
 		//free(philo[i].fork_left);
-		pthread_mutex_destroy(&philo[i].fork_left);
+	//	pthread_mutex_destroy(&philo[i].fork_left);
+		pthread_mutex_destroy(philo[i].fork);
 		i++;
 	}
 	//free(&philo->thread);
-	free(philo);
+	//free(philo);
 }
 
 /*
@@ -62,43 +64,53 @@ void	terminate_threads(t_philo *philo, t_args *args)
 	}
 }
 
-void	error_msg(char *err_msg)
+void	error_msg(char *err_msg, int args_accepted)
 {
 	printf("%s\n", err_msg);
+	if (args_accepted)
+	{
+		printf("number_of_philosophers\n");
+		printf("time_to_die\n");
+		printf("time_to_eat\n");
+		printf("time_to_sleep\n");
+		printf("Optional: [number_of_times_each_philosopher_must_eat]\n");
+	}
 }
 
 /*
  * get_time() returns an unsigned long for the current time in ms
+ *
+ * OBS.: If I did not know that the max number of philos had to be 200, I
+ * would have to malloc the philo struct.
+ * if (!(philo = (t_philo *)malloc(sizeof(t_philo) * args.nb_philos)))
+ *		return (FAIL);
  */
 
 int	main(int argc, char **argv)
 {
-	t_philo	*philo;
+	t_philo	philo[200];
 	t_args	args;
+	int		ret_init_arg;
 
+	ret_init_arg = 0;
 	if (argc == 5 || argc == 6 || argc == 7)
 	{
-		// NEED MORE MUTEX? FOR WHEN WRITING ON STDOUT/DISPLAY OR FOR WHEN A PHILO IS EATING
 		if (ft_strcmp(argv[1], "-dt") == 0)
-			init_args_dt(&args, argv);
+			ret_init_arg = init_args_diff_time(&args, argv);
 		else
-			init_args(&args, argv);
-
-		printf("NUMBER PHILOS MAIN = %d\n", args.nb_philos);
-
-		if (!(philo = (t_philo *)malloc(sizeof(t_philo) * args.nb_philos)))
-			return (-1);
+			ret_init_arg = init_args(&args, argv);
+		if (ret_init_arg == FAIL)
+		{
+			error_msg(COLOR_GREEN"Arguments accepted:"COLOR_RESET, 1);
+			return (FAIL);
+		}
 		init_philo(philo, &args);
-
 		init_mutex_fork(philo, &args);
-
-		printf("dt == %d\n", args.dt);
 		if (init_pthread_philos(philo, &args) == FAIL)
-			error_msg("The thread could not be created");
+			error_msg("The threads could not be created", 0);
 		terminate_threads(philo, &args);
-		free_destroy(philo, &args);
+		free_destroy(philo, args.nb_philos);
+		printf("|---------------------------------------------------------|\n");
 	}
-
-	philo = NULL;
 	return (0);
 }
