@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 02:13:33 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/06/25 23:29:20 by whoami           ###   ########.fr       */
+/*   Updated: 2021/06/26 21:37:27 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ void			*tf_philo_actions(void *actions);
 void			philo_eat(t_philo *philo, t_args *args);
 void			philo_think(t_philo *philo);
 void			philo_spleep(t_philo *philo);
+void			check_if_dead(t_philo *philo, t_args *args);
 
 /*
  * Printing on stdout
@@ -54,7 +55,8 @@ void			print_status(t_philo *philo,  char *action);
  * time
  */
 unsigned long	get_current_time(void);
-unsigned long	get_diff_time(unsigned long start_time);
+unsigned long	get_diff_time(unsigned long start_time);//,
+													//unsigned long current_time);
 
 /*
  * UTILS

@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:25:38 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/06/25 23:21:59 by whoami           ###   ########.fr       */
+/*   Updated: 2021/06/26 21:27:48 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ int	init_pthread_philos(t_philo *philo, t_args *args)
 		//printf("thread created\n");
 		i++;
 	}
+	check_if_dead(philo, args);
 	return (SUCCESS);
 }
 

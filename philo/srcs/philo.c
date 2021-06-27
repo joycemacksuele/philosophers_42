@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/06 22:32:42 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/06/25 22:31:41 by whoami           ###   ########.fr       */
+/*   Updated: 2021/06/26 22:10:55 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,11 @@ void	philo_eat(t_philo *philo, t_args *args)
 	pthread_mutex_lock(&philo->fork[philo->left_fork]);
 	pthread_mutex_lock(&philo->fork[philo->right_fork]);
 
-	pthread_mutex_lock(&philo->print_action);
+	//pthread_mutex_lock(&philo->print_action);
 	print_status(philo, COLOR_BLUE"has taken a fork (left fork)  ");
 	print_status(philo, COLOR_CYAN"has taken a fork (right fork) ");
 	print_status(philo, COLOR_GREEN"is eating                     ");
-	pthread_mutex_unlock(&philo->print_action);
+	//pthread_mutex_unlock(&philo->print_action);
 
 //	pthread_mutex_lock(&philo->print_action);
 //	printf("left_fork = %d ------ ", philo->left_fork);
@@ -39,8 +39,8 @@ void	philo_eat(t_philo *philo, t_args *args)
 //	printf("time to eat = %d\n", args->time_to_eat * 1000);
 
 	philo->last_meal_time = get_current_time();
-	printf("last_meal_time = %ld\n", philo->last_meal_time);
-	printf("time to eat microsecond = %d\n", args->time_to_eat * 1000);
+	//printf("last_meal_time = %ld\n", philo->last_meal_time);
+	//printf("time to eat microsecond = %d\n", args->time_to_eat * 1000);
 	usleep(args->time_to_eat * 1000);
 
 	pthread_mutex_unlock(&philo->fork[philo->left_fork]);
@@ -55,7 +55,7 @@ void	philo_eat(t_philo *philo, t_args *args)
  * considered dead
  */
 
-void	check_if_dead(t_philo *philo, t_args *args)
+void	check_if_dead(t_philo *philo, t_args *args)// ARRUMAR E FAZER PHILO MORRER
 {
 	//unsigned long diff_time;
 	unsigned long current_time;
@@ -80,7 +80,7 @@ void	check_if_dead(t_philo *philo, t_args *args)
 
 /*
  * Funtion called by the pthread_create function.
- * void *actions = &philo[i] whenre i > 0 && i < philo->nb.
+ * void *actions = &philo[i] where i > 0 && i < philo->nb.
  *
  * --------
  * philo eating → can't think or sleep.
@@ -95,20 +95,16 @@ void	*tf_philo_actions(void *actions)
 {
 	t_philo	*philo;
 	t_args	*args;
-	int		i;
 
-	i = 0;
 	philo = (t_philo*)actions;
 	args = philo->args;
 	//printf("TIME TO DIE = %d\n", args->time_to_die);
 
 	while (philo->one_philo_died == 0)
 	{
-		check_if_dead(philo, args);
 		philo_eat(philo, args);
 		//philo_sleep(philo);
 		//philo_think(philo);
-		i++;
 	}
 	return (NULL);
 }

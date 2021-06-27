@@ -6,18 +6,11 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:30:55 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/06/25 23:30:51 by whoami           ###   ########.fr       */
+/*   Updated: 2021/06/26 21:45:19 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_one.h"
-
-/*
- *			4 310 200 100
- *			4 410 200 200
- *			5 800 200 200 7
- *			5 800 200 200
- */
 
 /*
  * destroyroyng all mutex created and freeing any memory allocated.
@@ -69,11 +62,16 @@ void	error_msg(char *err_msg, int args_accepted)
 	printf("%s\n", err_msg);
 	if (args_accepted)
 	{
+		printf(COLOR_YELLOW);
+		printf("Optional: -dt (flag to check status' time difference)\n");
+		printf(COLOR_GREEN);
 		printf("number_of_philosophers\n");
 		printf("time_to_die\n");
 		printf("time_to_eat\n");
 		printf("time_to_sleep\n");
-		printf("Optional: [number_of_times_each_philosopher_must_eat]\n");
+		printf(COLOR_YELLOW);
+		printf("Optional: number_of_times_each_philosopher_must_eat\n");
+		printf(COLOR_RESET);
 	}
 }
 
@@ -101,7 +99,7 @@ int	main(int argc, char **argv)
 			ret_init_arg = init_args(&args, argv);
 		if (ret_init_arg == FAIL)
 		{
-			error_msg(COLOR_GREEN"Arguments accepted:"COLOR_RESET, 1);
+			error_msg("Arguments accepted:\n-------------------", 1);
 			return (FAIL);
 		}
 		init_philo(philo, &args);
