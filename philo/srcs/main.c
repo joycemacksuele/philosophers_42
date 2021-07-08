@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:30:55 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/06/26 21:45:19 by whoami           ###   ########.fr       */
+/*   Updated: 2021/07/07 21:11:10 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	free_destroy(t_philo *philo, int nb_philos)
 	(void)philo;
 	i = 0;
 	//args = philo->args;
-	printf("NB FILOS DENTRO FREE DESTRY = %d\n", nb_philos);
+	//printf("NB FILOS DENTRO FREE DESTRY = %d\n", nb_philos);
 	pthread_mutex_destroy(&philo->print_action);
 	pthread_mutex_destroy(&philo->check_death);
 	while (i < nb_philos)
@@ -53,6 +53,7 @@ void	terminate_threads(t_philo *philo, t_args *args)
 	{
 		pthread_join(philo[i].thread, NULL);
 		//if (pthread_join(philo[i].thread, NULL) != 0)//do an if, in case it fails
+		i++;
 		//	return ;
 	}
 }
@@ -75,6 +76,31 @@ void	error_msg(char *err_msg, int args_accepted)
 	}
 }
 
+
+int	init(t_philo *philo, t_args *args, char **argv)
+{
+	int		ret_init_arg;
+
+	ret_init_arg = 0;
+	if (ft_strcmp(argv[1], "-dt") == 0)
+		ret_init_arg = init_args_diff_time(args, argv);
+	else
+		ret_init_arg = init_args(args, argv);
+	if (ret_init_arg == FAIL)
+	{
+		error_msg("Arguments accepted:\n-------------------", 1);
+		return (FAIL);
+	}
+	init_philo(philo, args);
+	init_mutex_fork(philo, args);
+	if (init_pthread_philos(philo, args) == FAIL)
+	{
+		error_msg("The threads could not be created", 0);
+		return (FAIL);
+	}
+	return (SUCCESS);
+}
+
 /*
  * get_time() returns an unsigned long for the current time in ms
  *
@@ -88,24 +114,15 @@ int	main(int argc, char **argv)
 {
 	t_philo	philo[200];
 	t_args	args;
-	int		ret_init_arg;
 
-	ret_init_arg = 0;
 	if (argc == 5 || argc == 6 || argc == 7)
 	{
-		if (ft_strcmp(argv[1], "-dt") == 0)
-			ret_init_arg = init_args_diff_time(&args, argv);
-		else
-			ret_init_arg = init_args(&args, argv);
-		if (ret_init_arg == FAIL)
+		print_status_header(philo->print_action);
+		if (init(philo, &args, argv) == FAIL)
 		{
-			error_msg("Arguments accepted:\n-------------------", 1);
+			printf("RETORNOU FAIL P MAIN\n");
 			return (FAIL);
 		}
-		init_philo(philo, &args);
-		init_mutex_fork(philo, &args);
-		if (init_pthread_philos(philo, &args) == FAIL)
-			error_msg("The threads could not be created", 0);
 		terminate_threads(philo, &args);
 		free_destroy(philo, args.nb_philos);
 		printf("|---------------------------------------------------------|\n");

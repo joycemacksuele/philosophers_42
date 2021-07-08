@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:25:38 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/06/26 21:27:48 by whoami           ###   ########.fr       */
+/*   Updated: 2021/07/07 21:09:09 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,18 +25,22 @@
 int	init_pthread_philos(t_philo *philo, t_args *args)
 {
 	int	i;
+	t_philo *philo_copy;
 
 	i = 0;
+	philo_copy = philo;
 //	printf("NB TOTAL PHILOS = %d\n", args->nb_philos);
-	print_status_header(philo->print_action);
-	while (i < args->nb_philos)// && args->time_to_die >= 0)
+	while (i < args->nb_philos && args->time_to_die >= 0)
 	{
 		philo[i].args = args;
 		if (pthread_create(&philo[i].thread, NULL, tf_philo_actions, &philo[i]))
+		{
+			printf("RETORNOU FAIL\n");
 			return (FAIL);
-		//printf("thread created\n");
+		}
 		i++;
 	}
+	//printf("--------------PHILOS threads SATISFIED = %d\n", philo[i].satisfied);
 	check_if_dead(philo, args);
 	return (SUCCESS);
 }
@@ -120,10 +124,10 @@ int	init_args_diff_time(t_args *args, char **argv)
 		args->time_to_eat < 0 || args->time_to_sleep < 0 ||
 		args->times_philo_must_eat < 0)
 		return (FAIL);
+// TEST
+	//printf(">>>> args = %d, %d, %d, %d, %d <<<<\n\n", args->nb_philos, args->time_to_die, args->time_to_eat, args->time_to_sleep, args->times_philo_must_eat);
+// TEST
 	return (SUCCESS);
-// TEST
-	printf(">>>> args = %d, %d, %d, %d, %d <<<<\n\n", args->nb_philos, args->time_to_die, args->time_to_eat, args->time_to_sleep, args->times_philo_must_eat);
-// TEST
 }
 
 /*
@@ -165,10 +169,10 @@ int	init_args(t_args *args, char **argv)
 		args->time_to_eat < 0 || args->time_to_sleep < 0 ||
 		args->times_philo_must_eat < 0)
 		return (FAIL);
+// TEST
+	//printf(">>>> args = %d, %d, %d, %d, %d <<<<\n\n", args->nb_philos, args->time_to_die, args->time_to_eat, args->time_to_sleep, args->times_philo_must_eat);
+// TEST
 	return (SUCCESS);
-// TEST
-	printf(">>>> args = %d, %d, %d, %d, %d <<<<\n\n", args->nb_philos, args->time_to_die, args->time_to_eat, args->time_to_sleep, args->times_philo_must_eat);
-// TEST
 }
 
 void	init_philo(t_philo *philo, t_args *args)
@@ -183,10 +187,11 @@ void	init_philo(t_philo *philo, t_args *args)
 		philo[i].one_philo_died = 0;
 		philo[i].last_meal_time = get_current_time();
 		init_forks(&philo[i], args->nb_philos, philo[i].position);
+		philo[i].satisfied = 0;
 //		printf("		nb[%d] = %d\nleft_fork = %d\nright_fork = %d\n", i, philo[i].position, philo[i].left_fork, philo[i].right_fork);
 		i++;
 	}
 // TEST
-	printf("START_TIME = %ld\n", philo->start_time);
+	//printf("START_TIME = %ld\n", philo->start_time);
 // TEST
 }

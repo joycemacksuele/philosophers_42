@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 02:13:33 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/06/25 22:31:11 by whoami           ###   ########.fr       */
+/*   Updated: 2021/06/30 21:48:37 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,9 @@
 
 # define FAIL -1
 # define SUCCESS 0
+
+# define TRUE 1
+# define FALSE 0
 
 # define ONE_MS 1000
 
@@ -64,7 +67,8 @@ typedef struct s_philo
 	unsigned long	last_meal_time;
 	int				position;
 	int				one_philo_died;
-	int				philos_are_satisfied;
+	int				satisfied;
+	int				ate;
 	t_args			*args;
 }					t_philo;
 

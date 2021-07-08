@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 02:13:33 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/06/26 21:37:27 by whoami           ###   ########.fr       */
+/*   Updated: 2021/07/07 20:48:10 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ void			*tf_philo_actions(void *actions);
 void			philo_eat(t_philo *philo, t_args *args);
 void			philo_think(t_philo *philo);
 void			philo_spleep(t_philo *philo);
+void			check_if_all_ate(t_philo *philo, t_args *args);
 void			check_if_dead(t_philo *philo, t_args *args);
 
 /*

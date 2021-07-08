@@ -6,11 +6,20 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/06 22:32:42 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/06/26 22:10:55 by whoami           ###   ########.fr       */
-/*                                                                            */
+/*   Updated: 2021/07/07 21:31:21 by whoami           ###   ########.fr       */
 /* ************************************************************************** */
 
 #include "philo_one.h"
+
+void philo_takes_forks(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->fork[philo->left_fork]);
+	pthread_mutex_lock(&philo->fork[philo->right_fork]);
+	pthread_mutex_lock(&philo->print_action);
+	print_status(philo, COLOR_BLUE"has taken a fork (left fork)  ");
+	print_status(philo, COLOR_CYAN"has taken a fork (right fork) ");
+	pthread_mutex_unlock(&philo->print_action);
+}
 
 /*
  * int usleep(useconds_t microseconds);
@@ -19,63 +28,40 @@
  * 1 microsecond = 1 millisecond * 1000
  */
 
-void	philo_eat(t_philo *philo, t_args *args)
+void	philo_eats(t_philo *philo, t_args *args)
 {
-//	pthread_mutex_lock(&philo->fork_left);
-//	pthread_mutex_lock(&philo->fork_right);
-	pthread_mutex_lock(&philo->fork[philo->left_fork]);
-	pthread_mutex_lock(&philo->fork[philo->right_fork]);
-
-	//pthread_mutex_lock(&philo->print_action);
-	print_status(philo, COLOR_BLUE"has taken a fork (left fork)  ");
-	print_status(philo, COLOR_CYAN"has taken a fork (right fork) ");
+	pthread_mutex_lock(&philo->print_action);
 	print_status(philo, COLOR_GREEN"is eating                     ");
-	//pthread_mutex_unlock(&philo->print_action);
+	pthread_mutex_unlock(&philo->print_action);
 
-//	pthread_mutex_lock(&philo->print_action);
 //	printf("left_fork = %d ------ ", philo->left_fork);
 //	printf("right_fork = %d\n", philo->right_fork);
-//	pthread_mutex_unlock(&philo->print_action);
-//	printf("time to eat = %d\n", args->time_to_eat * 1000);
+
+	//pthread_mutex_lock(&philo->check_death);
 
 	philo->last_meal_time = get_current_time();
-	//printf("last_meal_time = %ld\n", philo->last_meal_time);
-	//printf("time to eat microsecond = %d\n", args->time_to_eat * 1000);
-	usleep(args->time_to_eat * 1000);
 
+	philo->ate = philo->ate + 1;
+	//pthread_mutex_unlock(&philo->check_death);// so it wont eat if its dead
+
+	usleep(args->time_to_eat * 1000);
 	pthread_mutex_unlock(&philo->fork[philo->left_fork]);
 	pthread_mutex_unlock(&philo->fork[philo->right_fork]);
-//	pthread_mutex_unlock(&philo->fork_left);
-//	pthread_mutex_unlock(&philo->fork_right);
-
 }
 
-/*
- * It's will update philo[0].time_to_die to -1 in case a philosofer is
- * considered dead
- */
-
-void	check_if_dead(t_philo *philo, t_args *args)// ARRUMAR E FAZER PHILO MORRER
+void	philo_sleeps(t_philo *philo, t_args *args)
 {
-	//unsigned long diff_time;
-	unsigned long current_time;
-	bool chech_if_last_meal_time_bigger_than_time_to_die;
-//	diff_time = get_diff_time(philo->start_time);
+	pthread_mutex_lock(&philo->print_action);
+	print_status(philo, COLOR_YELLOW"is sleeping                   ");
+	pthread_mutex_unlock(&philo->print_action);
+	usleep(args->time_to_sleep * ONE_MS);
+}
 
-	current_time = get_current_time();
-	chech_if_last_meal_time_bigger_than_time_to_die = (current_time - philo->last_meal_time >= (unsigned long)args->time_to_die);
-/*	printf("  start time = %ld\n", philo->start_time);
-	printf("  current time = %ld\n", current_time);
-	printf("  last meal time = %ld\n", philo->last_meal_time);
-	printf("  current time - last meal time = %ld\n", current_time - philo->last_meal_time);
-	printf("TIME TO DIE = %d\n", args->time_to_die);*/
-	usleep(args->time_to_die * ONE_MS);
-	if (chech_if_last_meal_time_bigger_than_time_to_die)
-//	if (current_time - philo->last_meal_time >= (unsigned long)args->time_to_die)// 10ms a mais e permitido nao como esta agora
-	{
-		print_status(philo, COLOR_RED"died"COLOR_RESET);
-		philo->one_philo_died = -1;
-	}
+void	philo_thinks(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->print_action);
+	print_status(philo, COLOR_PINK"is thinking                   ");
+	pthread_mutex_unlock(&philo->print_action);
 }
 
 /*
@@ -98,13 +84,13 @@ void	*tf_philo_actions(void *actions)
 
 	philo = (t_philo*)actions;
 	args = philo->args;
-	//printf("TIME TO DIE = %d\n", args->time_to_die);
-
-	while (philo->one_philo_died == 0)
+	while (philo->one_philo_died == FALSE && philo->satisfied == FALSE)
 	{
-		philo_eat(philo, args);
-		//philo_sleep(philo);
-		//philo_think(philo);
+		philo_takes_forks(philo);
+		philo_eats(philo, args);
+		philo_sleeps(philo, args);
+		philo_thinks(philo);
+		check_if_all_ate(philo, args);
 	}
 	return (NULL);
 }

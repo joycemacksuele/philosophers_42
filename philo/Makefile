@@ -6,7 +6,7 @@
 #    By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/19 00:38:15 by jfreitas          #+#    #+#              #
-#    Updated: 2021/06/25 22:40:12 by whoami           ###   ########.fr        #
+#    Updated: 2021/06/30 21:36:35 by whoami           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -48,13 +48,11 @@ INC_PHILO_ONE = ./includes
 INC_DEP = $(INC_PHILO_ONE)/*.h
 
 ##### SOURCES #####
-SRCS = $(addprefix $(SRCPATH)/, main.c philo.c init.c time.c print.c)
-UTILS = $(addprefix $(UTILSPATH)/, ft_functions.c)
+SRCS = $(addprefix $(SRCPATH)/, main.c ft_functions.c philo.c init.c \
+	time.c print.c inspector.c)
 
 ##### OBJECTS #####
 OBJS = $(SRCS:$(SRCPATH)/%.c=$(OBJPATH)/%.o)
-#OBJS += $(UTILS:$(UTILSPATH)/%.c=$(OBJPATH)/%.o)
-OBJS_UTILS = $(UTILS:$(UTILSPATH)/%.c=$(OBJPATH)/%.o)
 
 #### RULES ####
 all: mk_objdir $(NAME)
@@ -62,9 +60,9 @@ all: mk_objdir $(NAME)
 mk_objdir:
 	@if [ ! -d $(OBJPATH) ]; then mkdir $(OBJPATH); fi
 
-$(NAME): $(OBJS) $(INC_DEP) $(OBJS_UTILS)
+$(NAME): $(OBJS) $(INC_DEP)
 	@echo "\n$(END)$(LIGHT_BLUE)Making $(NAME)$(END)"
-	@$(CC) $(FLAGS) -o $(NAME) $(OBJS) $(OBJS_UTILS)
+	@$(CC) $(FLAGS) -o $(NAME) $(OBJS)
 	@echo "$(END)$(GREEN)$(NAME) is built\n$(END)"
 
 $(OBJPATH)/%.o: $(SRCPATH)/%.c $(INC_DEP)
