@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 02:13:33 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/07/07 20:48:10 by whoami           ###   ########.fr       */
+/*   Updated: 2021/07/12 21:59:51 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,11 @@
 /*
  * initialization of struct/mutex/pthreads
  */
-int				init_args(t_args *args, char **argv);
-int				init_args_diff_time(t_args *args, char **argv);
+int				init_args_checker(t_args *args, t_checker *checker, char **argv);
+int				init_args_checker_diff_time(t_args *args, t_checker *checker, char **argv);
 void			init_philo(t_philo *philo, t_args *args);
-int				init_mutex_fork(t_philo *philo, t_args *args);
-int				init_pthread_philos(t_philo *philo, t_args *args);
+int				init_mutex_fork(t_philo *philo, t_args *args, t_checker *checker);
+int				init_pthread_philos(t_philo *philo, t_args *args, t_checker *checker);
 
 /*
  * Philosophers actions
@@ -43,14 +43,14 @@ void			*tf_philo_actions(void *actions);
 void			philo_eat(t_philo *philo, t_args *args);
 void			philo_think(t_philo *philo);
 void			philo_spleep(t_philo *philo);
-void			check_if_all_ate(t_philo *philo, t_args *args);
-void			check_if_dead(t_philo *philo, t_args *args);
+void			check_if_all_ate(t_args *args, t_checker *checker);
+void			check_if_dead(t_philo *philo, t_args *args, t_checker *checker);
 
 /*
  * Printing on stdout
  */
 void			print_status_header(pthread_mutex_t print_action);
-void			print_status(t_philo *philo,  char *action);
+void			print_status(t_philo *philo, t_checker *checker, char *action);
 
 /*
  * time

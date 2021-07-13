@@ -6,18 +6,18 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/06 22:32:42 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/07/07 21:31:21 by whoami           ###   ########.fr       */
+/*   Updated: 2021/07/12 22:14:32 by whoami           ###   ########.fr       */
 /* ************************************************************************** */
 
 #include "philo_one.h"
 
-void philo_takes_forks(t_philo *philo)
+void philo_takes_forks(t_philo *philo, t_checker *checker)
 {
 	pthread_mutex_lock(&philo->fork[philo->left_fork]);
 	pthread_mutex_lock(&philo->fork[philo->right_fork]);
 	pthread_mutex_lock(&philo->print_action);
-	print_status(philo, COLOR_BLUE"has taken a fork (left fork)  ");
-	print_status(philo, COLOR_CYAN"has taken a fork (right fork) ");
+	print_status(philo, checker, COLOR_BLUE"has taken a fork (left fork)  ");
+	print_status(philo, checker, COLOR_CYAN"has taken a fork (right fork) ");
 	pthread_mutex_unlock(&philo->print_action);
 }
 
@@ -28,10 +28,10 @@ void philo_takes_forks(t_philo *philo)
  * 1 microsecond = 1 millisecond * 1000
  */
 
-void	philo_eats(t_philo *philo, t_args *args)
+void	philo_eats(t_philo *philo, t_args *args, t_checker *checker)
 {
 	pthread_mutex_lock(&philo->print_action);
-	print_status(philo, COLOR_GREEN"is eating                     ");
+	print_status(philo, checker, COLOR_GREEN"is eating                     ");
 	pthread_mutex_unlock(&philo->print_action);
 
 //	printf("left_fork = %d ------ ", philo->left_fork);
@@ -39,9 +39,9 @@ void	philo_eats(t_philo *philo, t_args *args)
 
 	//pthread_mutex_lock(&philo->check_death);
 
-	philo->last_meal_time = get_current_time();
+	checker->last_meal_time = get_current_time();
 
-	philo->ate = philo->ate + 1;
+	checker->ate = checker->ate + 1;
 	//pthread_mutex_unlock(&philo->check_death);// so it wont eat if its dead
 
 	usleep(args->time_to_eat * 1000);
@@ -49,18 +49,18 @@ void	philo_eats(t_philo *philo, t_args *args)
 	pthread_mutex_unlock(&philo->fork[philo->right_fork]);
 }
 
-void	philo_sleeps(t_philo *philo, t_args *args)
+void	philo_sleeps(t_philo *philo, t_args *args, t_checker *checker)
 {
 	pthread_mutex_lock(&philo->print_action);
-	print_status(philo, COLOR_YELLOW"is sleeping                   ");
+	print_status(philo, checker, COLOR_YELLOW"is sleeping                   ");
 	pthread_mutex_unlock(&philo->print_action);
 	usleep(args->time_to_sleep * ONE_MS);
 }
 
-void	philo_thinks(t_philo *philo)
+void	philo_thinks(t_philo *philo, t_checker *checker)
 {
 	pthread_mutex_lock(&philo->print_action);
-	print_status(philo, COLOR_PINK"is thinking                   ");
+	print_status(philo, checker, COLOR_PINK"is thinking                   ");
 	pthread_mutex_unlock(&philo->print_action);
 }
 
@@ -79,18 +79,21 @@ void	philo_thinks(t_philo *philo)
 
 void	*tf_philo_actions(void *actions)
 {
-	t_philo	*philo;
-	t_args	*args;
+	t_philo		*philo;
+	t_args		args;
+	t_checker	checker;
 
 	philo = (t_philo*)actions;
 	args = philo->args;
-	while (philo->one_philo_died == FALSE && philo->satisfied == FALSE)
+	checker = philo->checker;
+	while (checker.one_philo_died == FALSE && checker.satisfied == FALSE)
 	{
-		philo_takes_forks(philo);
-		philo_eats(philo, args);
-		philo_sleeps(philo, args);
-		philo_thinks(philo);
-		check_if_all_ate(philo, args);
+		philo_takes_forks(philo, &checker);
+		philo_eats(philo, &args, &checker);
+		philo_sleeps(philo, &args, &checker);
+		philo_thinks(philo, &checker);
+		check_if_all_ate(&args, &checker);
+		//check_if_dead(philo, &args, &checker);
 	}
 	return (NULL);
 }

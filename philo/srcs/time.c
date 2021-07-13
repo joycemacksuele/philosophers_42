@@ -6,19 +6,19 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:22:32 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/06/25 22:31:30 by whoami           ###   ########.fr       */
+/*   Updated: 2021/07/10 13:16:41 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_one.h"
 
-unsigned long	get_diff_time(unsigned long start_time)//later can be changed to phile->start_time
+unsigned long	get_diff_time(unsigned long past_time)//later can be changed to phile->start_time
 {
 	struct timeval	time;
-	unsigned long	ms_time;
+	unsigned long	ms_current_time;
 
 	gettimeofday(&time, NULL);
-	ms_time = ((time.tv_sec * 1000) + (time.tv_usec / 1000));
+	ms_current_time = ((time.tv_sec * 1000) + (time.tv_usec / 1000));
 // TEST
 //	printf("\n--------------\n");
 //	printf("start ms time = %ld ms\n", start_time);
@@ -26,7 +26,7 @@ unsigned long	get_diff_time(unsigned long start_time)//later can be changed to p
 //	printf("diff from start time and current time = %ld ms\n", ms_time - start_time);
 
 // TEST
-	return (ms_time - start_time);
+	return (ms_current_time - past_time);
 }
 
 /*

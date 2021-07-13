@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:25:38 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/07/07 21:09:09 by whoami           ###   ########.fr       */
+/*   Updated: 2021/07/12 22:23:11 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,17 +22,16 @@
  *	whithe the index of the structure as it's only paramenter.
  */
 
-int	init_pthread_philos(t_philo *philo, t_args *args)
+int	init_pthread_philos(t_philo *philo, t_args *args, t_checker *checker)
 {
 	int	i;
-	t_philo *philo_copy;
 
 	i = 0;
-	philo_copy = philo;
 //	printf("NB TOTAL PHILOS = %d\n", args->nb_philos);
-	while (i < args->nb_philos && args->time_to_die >= 0)
+	while (i < args->nb_philos && args->time_to_die >= 0 && checker->one_philo_died == FALSE)
 	{
-		philo[i].args = args;
+		philo[i].args = *args;
+		philo[i].checker = *checker;
 		if (pthread_create(&philo[i].thread, NULL, tf_philo_actions, &philo[i]))
 		{
 			printf("RETORNOU FAIL\n");
@@ -41,7 +40,7 @@ int	init_pthread_philos(t_philo *philo, t_args *args)
 		i++;
 	}
 	//printf("--------------PHILOS threads SATISFIED = %d\n", philo[i].satisfied);
-	check_if_dead(philo, args);
+	check_if_dead(&philo[0], args, &philo[0].checker);
 	return (SUCCESS);
 }
 
@@ -59,14 +58,14 @@ int	init_pthread_philos(t_philo *philo, t_args *args)
  * eating) at the same time s/he has died.
  */
 
-int	init_mutex_fork(t_philo *philo, t_args *args)
+int	init_mutex_fork(t_philo *philo, t_args *args, t_checker *checker)
 {
 	int	i;
 
 	i = 0;
 	if (pthread_mutex_init(&philo->print_action, NULL) != 0)
 		return (FAIL);
-	if (pthread_mutex_init(&philo->check_death, NULL) != 0)
+	if (pthread_mutex_init(&checker->check_death, NULL) != 0)
 		return (FAIL);
 	while (i < args->nb_philos)
 	{
@@ -109,7 +108,7 @@ void	init_forks(t_philo *philo, int nb_philos, int philo_position)
 	}
 }
 
-int	init_args_diff_time(t_args *args, char **argv)
+int	init_args_checker_diff_time(t_args *args, t_checker *checker, char **argv)
 {
 	args->diff_time = 1;
 	args->nb_philos = ft_atoi(argv[2]);
@@ -119,11 +118,14 @@ int	init_args_diff_time(t_args *args, char **argv)
 	if (argv[6])
 		args->times_philo_must_eat = ft_atoi(argv[6]);
 	else
-		args->times_philo_must_eat = 0;
+		args->times_philo_must_eat = FALSE;
 	if (args->nb_philos < 1 || args->nb_philos > 200 || args->time_to_die < 0 ||
 		args->time_to_eat < 0 || args->time_to_sleep < 0 ||
 		args->times_philo_must_eat < 0)
 		return (FAIL);
+	checker->last_meal_time = get_current_time();
+	checker->one_philo_died = 0;
+	checker->satisfied = FALSE;
 // TEST
 	//printf(">>>> args = %d, %d, %d, %d, %d <<<<\n\n", args->nb_philos, args->time_to_die, args->time_to_eat, args->time_to_sleep, args->times_philo_must_eat);
 // TEST
@@ -154,7 +156,7 @@ int	init_args_diff_time(t_args *args, char **argv)
  *
  */
 
-int	init_args(t_args *args, char **argv)
+int	init_args_checker(t_args *args, t_checker *checker, char **argv)
 {
 	args->diff_time = 0;
 	args->nb_philos = ft_atoi(argv[1]);
@@ -164,11 +166,14 @@ int	init_args(t_args *args, char **argv)
 	if (argv[5])
 		args->times_philo_must_eat = ft_atoi(argv[5]);
 	else
-		args->times_philo_must_eat = 0;
+		args->times_philo_must_eat = FALSE;
 	if (args->nb_philos < 1 || args->nb_philos > 200 || args->time_to_die < 0 ||
 		args->time_to_eat < 0 || args->time_to_sleep < 0 ||
 		args->times_philo_must_eat < 0)
 		return (FAIL);
+	checker->last_meal_time = get_current_time();
+	checker->one_philo_died = 0;
+	checker->satisfied = FALSE;
 // TEST
 	//printf(">>>> args = %d, %d, %d, %d, %d <<<<\n\n", args->nb_philos, args->time_to_die, args->time_to_eat, args->time_to_sleep, args->times_philo_must_eat);
 // TEST
@@ -184,10 +189,7 @@ void	init_philo(t_philo *philo, t_args *args)
 	{
 		philo[i].position = i + 1;
 		philo[i].start_time = get_current_time();
-		philo[i].one_philo_died = 0;
-		philo[i].last_meal_time = get_current_time();
 		init_forks(&philo[i], args->nb_philos, philo[i].position);
-		philo[i].satisfied = 0;
 //		printf("		nb[%d] = %d\nleft_fork = %d\nright_fork = %d\n", i, philo[i].position, philo[i].left_fork, philo[i].right_fork);
 		i++;
 	}

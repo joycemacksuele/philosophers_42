@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:30:55 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/07/07 21:11:10 by whoami           ###   ########.fr       */
+/*   Updated: 2021/07/12 21:57:21 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
  * destroyroyng all mutex created and freeing any memory allocated.
  */
 
-void	free_destroy(t_philo *philo, int nb_philos)
+void	free_destroy(t_philo *philo, t_checker *checker, int nb_philos)
 {
 	int	i;
 
@@ -24,8 +24,6 @@ void	free_destroy(t_philo *philo, int nb_philos)
 	i = 0;
 	//args = philo->args;
 	//printf("NB FILOS DENTRO FREE DESTRY = %d\n", nb_philos);
-	pthread_mutex_destroy(&philo->print_action);
-	pthread_mutex_destroy(&philo->check_death);
 	while (i < nb_philos)
 	{
 		//free(philo[i].fork_left);
@@ -33,6 +31,8 @@ void	free_destroy(t_philo *philo, int nb_philos)
 		pthread_mutex_destroy(philo[i].fork);
 		i++;
 	}
+	pthread_mutex_destroy(&philo->print_action);
+	pthread_mutex_destroy(&checker->check_death);
 	//free(&philo->thread);
 	//free(philo);
 }
@@ -77,23 +77,23 @@ void	error_msg(char *err_msg, int args_accepted)
 }
 
 
-int	init(t_philo *philo, t_args *args, char **argv)
+int	init(t_philo *philo, t_args *args, t_checker *checker, char **argv)
 {
 	int		ret_init_arg;
 
 	ret_init_arg = 0;
 	if (ft_strcmp(argv[1], "-dt") == 0)
-		ret_init_arg = init_args_diff_time(args, argv);
+		ret_init_arg = init_args_checker_diff_time(args, checker, argv);
 	else
-		ret_init_arg = init_args(args, argv);
+		ret_init_arg = init_args_checker(args, checker, argv);
 	if (ret_init_arg == FAIL)
 	{
 		error_msg("Arguments accepted:\n-------------------", 1);
 		return (FAIL);
 	}
 	init_philo(philo, args);
-	init_mutex_fork(philo, args);
-	if (init_pthread_philos(philo, args) == FAIL)
+	init_mutex_fork(philo, args, checker);
+	if (init_pthread_philos(philo, args, checker) == FAIL)
 	{
 		error_msg("The threads could not be created", 0);
 		return (FAIL);
@@ -112,19 +112,20 @@ int	init(t_philo *philo, t_args *args, char **argv)
 
 int	main(int argc, char **argv)
 {
-	t_philo	philo[200];
-	t_args	args;
+	t_philo		philo[200];
+	t_args		args;
+	t_checker	checker;
 
 	if (argc == 5 || argc == 6 || argc == 7)
 	{
 		print_status_header(philo->print_action);
-		if (init(philo, &args, argv) == FAIL)
+		if (init(philo, &args, &checker, argv) == FAIL)
 		{
 			printf("RETORNOU FAIL P MAIN\n");
 			return (FAIL);
 		}
 		terminate_threads(philo, &args);
-		free_destroy(philo, args.nb_philos);
+		free_destroy(philo, &checker, args.nb_philos);
 		printf("|---------------------------------------------------------|\n");
 	}
 	return (0);

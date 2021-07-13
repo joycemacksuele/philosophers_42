@@ -6,7 +6,7 @@
 /*   By: whoami <jfreitas@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/30 21:33:05 by whoami            #+#    #+#             */
-/*   Updated: 2021/07/07 21:08:11 by whoami           ###   ########.fr       */
+/*   Updated: 2021/07/12 22:25:40 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,23 +17,30 @@
  * considered dead
  */
 
-void	check_if_dead(t_philo *philo, t_args *args)// ARRUMAR E FAZER PHILO MORRER
+void	check_if_dead(t_philo *philo, t_args *args, t_checker *checker)// ARRUMAR E FAZER PHILO MORRER
 {
-	unsigned long current_time;
-	bool chech_if_last_meal_time_bigger_than_time_to_die;
+	int	i;
+//	bool chech_death;
 
-	current_time = get_current_time();
-	chech_if_last_meal_time_bigger_than_time_to_die = (current_time - philo->last_meal_time >= (unsigned long)args->time_to_die);
+	i = 0;
+//	chech_death = (get_diff_time(philo[i].last_meal_time) <= (unsigned long)args->time_to_die);
 //	printf("  start time = %ld\n", philo->start_time);
-//	printf("  current time = %ld\n", current_time);
-//	usleep(args->time_to_die * ONE_MS);
-	if (chech_if_last_meal_time_bigger_than_time_to_die)
-//	if (current_time - philo->last_meal_time >= (unsigned long)args->time_to_die)// 10ms a mais e permitido nao como esta agora
+//	printf("  current time = %ld\n", get_current_time());
+	printf("\n\nENTERED CHECK OF DEAD\n\n");
+	while (i < args->nb_philos && checker->one_philo_died == FALSE)
+	//if (checker->one_philo_died == FALSE)
 	{
-		print_status(philo, COLOR_RED"died"COLOR_RESET);
-		philo->one_philo_died = -1;
+		pthread_mutex_lock(&checker->check_death);
+		printf("last meal = %ld\ntime to die = %ld\n", get_diff_time(philo[i].checker.last_meal_time), (unsigned long)args->time_to_die);
+		if (get_diff_time(checker->last_meal_time) >= (unsigned long)args->time_to_die)
+		{
+			print_status(&philo[i], &philo[i].checker, COLOR_RED"died                          "COLOR_RESET);
+			philo[i].checker.one_philo_died = TRUE;
+		}
+		pthread_mutex_unlock(&checker->check_death);
+		i++;
 	}
-
+//10ms a mais e permitido nao como esta agora
 }
 
 /*
@@ -43,8 +50,15 @@ void	check_if_dead(t_philo *philo, t_args *args)// ARRUMAR E FAZER PHILO MORRER
  * all philos had already eaten
  */
 
-void	check_if_all_ate(t_philo *philos, t_args *args)
+void	check_if_all_ate(t_args *args, t_checker *checker)
 {
-	if (philos->satisfied == FALSE && philos->ate >= args->times_philo_must_eat)
-		philos->satisfied = TRUE;
+	if (args->times_philo_must_eat != FALSE && checker->satisfied == FALSE)
+	{
+		if (checker->ate >= args->times_philo_must_eat)
+		{
+			printf("ate = %d\nlast param = %d\n", checker->ate, args->times_philo_must_eat);
+			printf("ENTERED LAST PARAM\n");
+			checker->satisfied = TRUE;
+		}
+	}
 }

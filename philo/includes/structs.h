@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 02:13:33 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/06/30 21:48:37 by whoami           ###   ########.fr       */
+/*   Updated: 2021/07/12 21:35:03 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,16 @@
 # define COLOR_PINK		"\x1b[35m"// thinking
 # define COLOR_RESET	"\x1b[0m"
 
+typedef struct s_checker
+{
+	pthread_mutex_t	check_death;
+	unsigned long	last_meal_time;
+	int				one_philo_died;
+	int				satisfied;
+	int				ate;
+
+}					t_checker;
+
 typedef struct s_args
 {
 	int				diff_time;
@@ -56,20 +66,14 @@ typedef struct s_args
 typedef struct s_philo
 {
 	pthread_t		thread;
-	pthread_mutex_t	fork[200];
-//	pthread_mutex_t	fork_left;
-//	pthread_mutex_t	fork_right;
 	pthread_mutex_t	print_action;
-	pthread_mutex_t	check_death;
+	pthread_mutex_t	fork[200];
 	int				left_fork;
 	int				right_fork;
 	unsigned long	start_time;
-	unsigned long	last_meal_time;
 	int				position;
-	int				one_philo_died;
-	int				satisfied;
-	int				ate;
-	t_args			*args;
+	t_args			args;
+	t_checker		checker;
 }					t_philo;
 
 #endif
