@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 02:13:33 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/07/12 21:35:03 by whoami           ###   ########.fr       */
+/*   Updated: 2021/07/24 22:32:07 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,37 +43,42 @@
 # define COLOR_PINK		"\x1b[35m"// thinking
 # define COLOR_RESET	"\x1b[0m"
 
-typedef struct s_checker
+/*typedef struct s_checker
 {
+	pthread_mutex_t	print_action;
 	pthread_mutex_t	check_death;
-	unsigned long	last_meal_time;
-	int				one_philo_died;
-	int				satisfied;
-	int				ate;
+	//int				one_philo_died;
+//	int				satisfied;
+}					t_checker;*/
 
-}					t_checker;
-
-typedef struct s_args
+typedef struct s_const_data
 {
-	int				diff_time;
+	int				diff_time_arg;
 	int				nb_philos;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				times_philo_must_eat;
-}					t_args;
+	pthread_mutex_t	print_action;
+	pthread_mutex_t	check_death;
+	pthread_mutex_t	fork[200];
+	int				one_philo_died;
+	int				satisfied;
+	unsigned long	start_time;
+}					t_const_data;
 
 typedef struct s_philo
 {
 	pthread_t		thread;
-	pthread_mutex_t	print_action;
-	pthread_mutex_t	fork[200];
+	//pthread_mutex_t	fork[200];
+	//pthread_mutex_t	print_action[200];
 	int				left_fork;
 	int				right_fork;
-	unsigned long	start_time;
 	int				position;
-	t_args			args;
-	t_checker		checker;
+	int				ate;
+	unsigned long	last_meal_time;
+	//int				satisfied;
+	t_const_data	*const_data;
 }					t_philo;
 
 #endif

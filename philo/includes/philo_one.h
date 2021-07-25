@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 02:13:33 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/07/12 21:59:51 by whoami           ###   ########.fr       */
+/*   Updated: 2021/07/24 22:50:47 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,27 +30,31 @@
 /*
  * initialization of struct/mutex/pthreads
  */
-int				init_args_checker(t_args *args, t_checker *checker, char **argv);
-int				init_args_checker_diff_time(t_args *args, t_checker *checker, char **argv);
-void			init_philo(t_philo *philo, t_args *args);
-int				init_mutex_fork(t_philo *philo, t_args *args, t_checker *checker);
-int				init_pthread_philos(t_philo *philo, t_args *args, t_checker *checker);
+//, t_checker *checker
+int				init_args_checker(t_const_data *const_data, char **argv);
+int				init_args_checker_diff_time(t_const_data *const_data, char **argv);
+void			init_philo(t_philo *philo, t_const_data *const_data);
+int				init_mutex_fork(t_const_data *const_data);
+int				init_pthread_philos(t_philo *philo, t_const_data *const_data);
 
 /*
  * Philosophers actions
  */
 void			*tf_philo_actions(void *actions);
-void			philo_eat(t_philo *philo, t_args *args);
+void			philo_eat(t_philo *philo, t_const_data *const_data);
 void			philo_think(t_philo *philo);
 void			philo_spleep(t_philo *philo);
-void			check_if_all_ate(t_args *args, t_checker *checker);
-void			check_if_dead(t_philo *philo, t_args *args, t_checker *checker);
+void			check_if_all_ate(t_philo *philo, t_const_data *const_data);
+void			*check_if_dead(void *actions);
+void			check_death(t_philo *philo, t_const_data *const_data);
+void			terminate_threads(t_philo *philo, t_const_data *const_data);
 
 /*
  * Printing on stdout
  */
-void			print_status_header(pthread_mutex_t print_action);
-void			print_status(t_philo *philo, t_checker *checker, char *action);
+void			print_status_header();
+void			print_status_header_optional();
+void			print_status(t_philo *philos, t_const_data *const_data, char *action);
 
 /*
  * time

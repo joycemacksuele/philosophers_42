@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:22:32 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/07/10 13:16:41 by whoami           ###   ########.fr       */
+/*   Updated: 2021/07/16 20:54:53 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,12 @@
 
 unsigned long	get_diff_time(unsigned long past_time)//later can be changed to phile->start_time
 {
-	struct timeval	time;
-	unsigned long	ms_current_time;
+	//struct timeval	time;
+	unsigned long	current_time_ms;
 
-	gettimeofday(&time, NULL);
-	ms_current_time = ((time.tv_sec * 1000) + (time.tv_usec / 1000));
+	current_time_ms = get_current_time();
+	//gettimeofday(&time, NULL);
+	//ms_current_time = ((time.tv_sec * 1000) + (time.tv_usec / 1000));
 // TEST
 //	printf("\n--------------\n");
 //	printf("start ms time = %ld ms\n", start_time);
@@ -26,7 +27,7 @@ unsigned long	get_diff_time(unsigned long past_time)//later can be changed to ph
 //	printf("diff from start time and current time = %ld ms\n", ms_time - start_time);
 
 // TEST
-	return (ms_current_time - past_time);
+	return (current_time_ms - past_time);
 }
 
 /*

@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:25:38 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/07/12 22:23:11 by whoami           ###   ########.fr       */
+/*   Updated: 2021/07/24 22:38:07 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,25 +22,24 @@
  *	whithe the index of the structure as it's only paramenter.
  */
 
-int	init_pthread_philos(t_philo *philo, t_args *args, t_checker *checker)
+int	init_pthread_philos(t_philo *philo, t_const_data *const_data)
 {
 	int	i;
 
 	i = 0;
-//	printf("NB TOTAL PHILOS = %d\n", args->nb_philos);
-	while (i < args->nb_philos && args->time_to_die >= 0 && checker->one_philo_died == FALSE)
+	while (i < const_data->nb_philos && const_data->time_to_die >= 0)
 	{
-		philo[i].args = *args;
-		philo[i].checker = *checker;
-		if (pthread_create(&philo[i].thread, NULL, tf_philo_actions, &philo[i]))
+		philo[i].const_data = const_data;
+		if (pthread_create(&(philo[i].thread), NULL, tf_philo_actions, &(philo[i])))
 		{
-			printf("RETORNOU FAIL\n");
+			error_msg("The threads could not be created", 0);
 			return (FAIL);
 		}
+		//pthread_detach(philo[i].thread);
 		i++;
 	}
-	//printf("--------------PHILOS threads SATISFIED = %d\n", philo[i].satisfied);
-	check_if_dead(&philo[0], args, &philo[0].checker);
+	check_death(&philo[0], const_data);
+	//terminate_threads(philo, const_data);
 	return (SUCCESS);
 }
 
@@ -58,77 +57,44 @@ int	init_pthread_philos(t_philo *philo, t_args *args, t_checker *checker)
  * eating) at the same time s/he has died.
  */
 
-int	init_mutex_fork(t_philo *philo, t_args *args, t_checker *checker)
+int	init_mutex_fork(t_const_data *const_data)
 {
 	int	i;
 
 	i = 0;
-	if (pthread_mutex_init(&philo->print_action, NULL) != 0)
+	if (pthread_mutex_init(&const_data->print_action, NULL) != 0)
 		return (FAIL);
-	if (pthread_mutex_init(&checker->check_death, NULL) != 0)
+	if (pthread_mutex_init(&const_data->check_death, NULL) != 0)
 		return (FAIL);
-	while (i < args->nb_philos)
+	while (i < const_data->nb_philos)
 	{
-		//philo[i].fork_left = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
-		//if (philo[i].fork_left == NULL)
-		//	return (FAIL);
-		if (pthread_mutex_init(&philo[i].fork[i], NULL) != 0)
+		if (pthread_mutex_init(&const_data->fork[i], NULL) != 0)
 			return (FAIL);
-		//printf("mutex initialized\n");
+	//	if (pthread_mutex_init(philo[i].print_action, NULL) != 0)
+	//		return (FAIL);
 		i++;
 	}
-/*	i = 0;
-	while (i < args->nb_philos)
-	{
-		if (i == args->nb_philos - 1)// if its the last fork
-			philo[i].fork_right = philo[0].fork_left;
-		else
-			philo[i].fork_right = philo[i + 1].fork_left;
-		i++;
-	}*/
 	return (SUCCESS);
 }
 
-void	init_forks(t_philo *philo, int nb_philos, int philo_position)
+int	init_args_checker_diff_time(t_const_data *const_data, char **argv)
 {
-	if (philo_position == 1)
-	{
-		philo->left_fork = 2;
-		philo->right_fork = 1;
-	}
-	else if (philo_position == nb_philos)
-	{
-		philo->left_fork = 1;
-		philo->right_fork = nb_philos;
-	}
-	else
-	{
-		philo->left_fork = philo_position + 1;
-		philo->right_fork = philo_position;
-	}
-}
-
-int	init_args_checker_diff_time(t_args *args, t_checker *checker, char **argv)
-{
-	args->diff_time = 1;
-	args->nb_philos = ft_atoi(argv[2]);
-	args->time_to_die = ft_atoi(argv[3]);
-	args->time_to_eat = ft_atoi(argv[4]);
-	args->time_to_sleep = ft_atoi(argv[5]);
+	const_data->nb_philos = ft_atoi(argv[2]);
+	const_data->time_to_die = ft_atoi(argv[3]);
+	const_data->time_to_eat = ft_atoi(argv[4]);
+	const_data->time_to_sleep = ft_atoi(argv[5]);
 	if (argv[6])
-		args->times_philo_must_eat = ft_atoi(argv[6]);
+		const_data->times_philo_must_eat = ft_atoi(argv[6]);
 	else
-		args->times_philo_must_eat = FALSE;
-	if (args->nb_philos < 1 || args->nb_philos > 200 || args->time_to_die < 0 ||
-		args->time_to_eat < 0 || args->time_to_sleep < 0 ||
-		args->times_philo_must_eat < 0)
+		const_data->times_philo_must_eat = FALSE;
+	const_data->start_time = get_current_time();
+	const_data->one_philo_died = FALSE;
+	const_data->satisfied = FALSE;
+	const_data->diff_time_arg = TRUE;
+	if (const_data->nb_philos < 1 || const_data->nb_philos > 200 || const_data->time_to_die < 0 ||
+		const_data->time_to_eat < 0 || const_data->time_to_sleep < 0 ||
+		const_data->times_philo_must_eat < 0)
 		return (FAIL);
-	checker->last_meal_time = get_current_time();
-	checker->one_philo_died = 0;
-	checker->satisfied = FALSE;
-// TEST
-	//printf(">>>> args = %d, %d, %d, %d, %d <<<<\n\n", args->nb_philos, args->time_to_die, args->time_to_eat, args->time_to_sleep, args->times_philo_must_eat);
-// TEST
 	return (SUCCESS);
 }
 
@@ -156,44 +122,59 @@ int	init_args_checker_diff_time(t_args *args, t_checker *checker, char **argv)
  *
  */
 
-int	init_args_checker(t_args *args, t_checker *checker, char **argv)
+int	init_args_checker(t_const_data *const_data, char **argv)
 {
-	args->diff_time = 0;
-	args->nb_philos = ft_atoi(argv[1]);
-	args->time_to_die = ft_atoi(argv[2]);
-	args->time_to_eat = ft_atoi(argv[3]);
-	args->time_to_sleep = ft_atoi(argv[4]);
+	const_data->nb_philos = ft_atoi(argv[1]);
+	const_data->time_to_die = ft_atoi(argv[2]);
+	const_data->time_to_eat = ft_atoi(argv[3]);
+	const_data->time_to_sleep = ft_atoi(argv[4]);
 	if (argv[5])
-		args->times_philo_must_eat = ft_atoi(argv[5]);
+		const_data->times_philo_must_eat = ft_atoi(argv[5]);
 	else
-		args->times_philo_must_eat = FALSE;
-	if (args->nb_philos < 1 || args->nb_philos > 200 || args->time_to_die < 0 ||
-		args->time_to_eat < 0 || args->time_to_sleep < 0 ||
-		args->times_philo_must_eat < 0)
+		const_data->times_philo_must_eat = FALSE;
+	const_data->start_time = get_current_time();
+	const_data->one_philo_died = FALSE;
+	const_data->satisfied = FALSE;
+	const_data->diff_time_arg = FALSE;
+	if (const_data->nb_philos < 1 || const_data->nb_philos > 200 || const_data->time_to_die < 0 ||
+		const_data->time_to_eat < 0 || const_data->time_to_sleep < 0 ||
+		const_data->times_philo_must_eat < 0)
 		return (FAIL);
-	checker->last_meal_time = get_current_time();
-	checker->one_philo_died = 0;
-	checker->satisfied = FALSE;
-// TEST
-	//printf(">>>> args = %d, %d, %d, %d, %d <<<<\n\n", args->nb_philos, args->time_to_die, args->time_to_eat, args->time_to_sleep, args->times_philo_must_eat);
-// TEST
+	//printf(">>>> args = %d, %d, %d, %d, %d <<<<\n\n", const_data->nb_philos, const_data->time_to_die, const_data->time_to_eat, const_data->time_to_sleep, const_data->times_philo_must_eat);
 	return (SUCCESS);
 }
 
-void	init_philo(t_philo *philo, t_args *args)
+void	init_forks(t_philo *philo, int nb_philos, int philo_position)
+{
+	if (philo_position == 1)
+	{
+		philo->left_fork = 2;
+		philo->right_fork = 1;
+	}
+	else if (philo_position == nb_philos)
+	{
+		philo->left_fork = 1;
+		philo->right_fork = nb_philos;
+	}
+	else
+	{
+		philo->left_fork = philo_position + 1;
+		philo->right_fork = philo_position;
+	}
+}
+
+void	init_philo(t_philo *philo, t_const_data *const_data)
 {
 	int	i;
 
 	i = 0;
-	while (i < args->nb_philos)
+	while (i < const_data->nb_philos)
 	{
 		philo[i].position = i + 1;
-		philo[i].start_time = get_current_time();
-		init_forks(&philo[i], args->nb_philos, philo[i].position);
-//		printf("		nb[%d] = %d\nleft_fork = %d\nright_fork = %d\n", i, philo[i].position, philo[i].left_fork, philo[i].right_fork);
+		init_forks(&philo[i], const_data->nb_philos, philo[i].position);
+		philo[i].ate = 0;
+		philo[i].last_meal_time = get_current_time();
+		//philo[i].satisfied = FALSE;
 		i++;
 	}
-// TEST
-	//printf("START_TIME = %ld\n", philo->start_time);
-// TEST
 }
