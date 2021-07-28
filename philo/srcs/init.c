@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:25:38 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/07/24 22:38:07 by whoami           ###   ########.fr       */
+/*   Updated: 2021/07/27 21:52:32 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,16 +30,16 @@ int	init_pthread_philos(t_philo *philo, t_const_data *const_data)
 	while (i < const_data->nb_philos && const_data->time_to_die >= 0)
 	{
 		philo[i].const_data = const_data;
-		if (pthread_create(&(philo[i].thread), NULL, tf_philo_actions, &(philo[i])))
+		if (pthread_create(&(philo[i].thread), NULL, tf_philo_actions,
+			&(philo[i])))
 		{
 			error_msg("The threads could not be created", 0);
 			return (FAIL);
 		}
-		//pthread_detach(philo[i].thread);
+		pthread_detach(philo[i].thread);
 		i++;
 	}
 	check_death(&philo[0], const_data);
-	//terminate_threads(philo, const_data);
 	return (SUCCESS);
 }
 
@@ -89,7 +89,7 @@ int	init_args_checker_diff_time(t_const_data *const_data, char **argv)
 		const_data->times_philo_must_eat = FALSE;
 	const_data->start_time = get_current_time();
 	const_data->one_philo_died = FALSE;
-	const_data->satisfied = FALSE;
+	//const_data->satisfied = FALSE;
 	const_data->diff_time_arg = TRUE;
 	if (const_data->nb_philos < 1 || const_data->nb_philos > 200 || const_data->time_to_die < 0 ||
 		const_data->time_to_eat < 0 || const_data->time_to_sleep < 0 ||
@@ -134,7 +134,7 @@ int	init_args_checker(t_const_data *const_data, char **argv)
 		const_data->times_philo_must_eat = FALSE;
 	const_data->start_time = get_current_time();
 	const_data->one_philo_died = FALSE;
-	const_data->satisfied = FALSE;
+	//const_data->satisfied = FALSE;
 	const_data->diff_time_arg = FALSE;
 	if (const_data->nb_philos < 1 || const_data->nb_philos > 200 || const_data->time_to_die < 0 ||
 		const_data->time_to_eat < 0 || const_data->time_to_sleep < 0 ||
@@ -174,7 +174,7 @@ void	init_philo(t_philo *philo, t_const_data *const_data)
 		init_forks(&philo[i], const_data->nb_philos, philo[i].position);
 		philo[i].ate = 0;
 		philo[i].last_meal_time = get_current_time();
-		//philo[i].satisfied = FALSE;
+		philo[i].satisfied = FALSE;
 		i++;
 	}
 }

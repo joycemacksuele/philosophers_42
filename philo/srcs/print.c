@@ -6,27 +6,40 @@
 /*   By: whoami <jfreitas@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/17 09:40:35 by whoami            #+#    #+#             */
-/*   Updated: 2021/07/24 23:10:01 by whoami           ###   ########.fr       */
+/*   Updated: 2021/07/27 22:00:30 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_one.h"
 
-void	print_status_header()
+void	print_status_header(int finished)
 {
-	printf("┌───────────────┬─────────┬─────────────────────────┐\n");
-	printf("│ Time          │ Philo   │ Event                   │\n");
-	printf("├───────────────┼─────────┼─────────────────────────┤\n");
+	if (finished == 0)
+	{
+		printf("┌───────────────┬─────────┬─────────────────────────┐\n");
+		printf("│ Time          │ Philo   │ Event                   │\n");
+		printf("├───────────────┼─────────┼─────────────────────────┤\n");
+	}
+	else
+		printf("└───────────────┴─────────┴─────────────────────────┘\n");
 }
 
-void	print_status_header_optional()
+void	print_status_header_optional(int finished)
 {
-	printf("┌───────────────┬─────────┬─────────────────────────┬───────────┐");
-	printf("\n");
-	printf("│ Time          │ Philo   │ Event                   │ Diff Time │");
-	printf("\n");
-	printf("├───────────────┼─────────┼─────────────────────────┼───────────┤");
-	printf("\n");
+	if (finished == 0)
+	{
+		printf("┌───────────────┬─────────┬─────────────────────────┬");
+		printf("───────────┐\n");
+		printf("│ Time          │ Philo   │ Event                   │");
+		printf(" Diff Time │\n");
+		printf("├───────────────┼─────────┼─────────────────────────┼");
+		printf("───────────┤\n");
+	}
+	else
+	{
+		printf("└───────────────┴─────────┴─────────────────────────┴");
+		printf("───────────┘\n");
+	}
 }
 
 void	print_status(t_philo *philo, t_const_data *const_data,  char *action)
@@ -34,11 +47,10 @@ void	print_status(t_philo *philo, t_const_data *const_data,  char *action)
 	int	diff_time;
 
 	diff_time = 0;
-	pthread_mutex_lock(&const_data->print_action);
 	if (const_data->one_philo_died == FALSE)
 	{
 		//pthread_mutex_lock(&const_data->print_action);
-		printf("│ %ld │ ",  get_current_time());;
+		printf("│ %ld │ ",  get_current_time());
 		printf("philo %d │ %s%s│", philo->position, action, COLOR_RESET);
 		if (const_data->diff_time_arg == TRUE)
 		{
@@ -55,5 +67,4 @@ void	print_status(t_philo *philo, t_const_data *const_data,  char *action)
 		printf("\n");
 		//pthread_mutex_unlock(&const_data->print_action);
 	}
-	pthread_mutex_unlock(&const_data->print_action);
 }

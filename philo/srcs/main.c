@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:30:55 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/07/24 23:12:31 by whoami           ###   ########.fr       */
+/*   Updated: 2021/07/27 19:04:52 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void	error_msg(char *err_msg, int args_accepted)
 }
 
 
-int	init(t_philo *philo, t_const_data *const_data, char **argv)
+int	init_struct(t_philo *philo, t_const_data *const_data, char **argv)
 {
 	int		ret_init_arg;
 
@@ -87,15 +87,6 @@ int	init(t_philo *philo, t_const_data *const_data, char **argv)
 		return (FAIL);
 	init_philo(philo, const_data);
 	init_mutex_fork(const_data);
-	if (ft_strcmp(argv[1], "-dt") == 0)
-		print_status_header_optional();
-	else
-		print_status_header();
-	if (init_pthread_philos(philo, const_data) == FAIL)
-	{
-		error_msg("The threads could not be created", 0);
-		return (FAIL);
-	}
 	return (SUCCESS);
 }
 
@@ -110,24 +101,28 @@ int	init(t_philo *philo, t_const_data *const_data, char **argv)
 
 int	main(int argc, char **argv)
 {
-	t_philo		philo[200];
-	t_const_data		const_data;
-	//t_checker	checker;
+	t_philo			philo[200];
+	t_const_data	const_data;
 
 	if (argc == 5 || argc == 6 || argc == 7)
 	{
-		if (init(philo, &const_data, argv) == FAIL)
+		if (init_struct(philo, &const_data, argv) == FAIL)
 			return (FAIL);
-		terminate_threads(philo, &const_data);
+		if (ft_strcmp(argv[1], "-dt") == 0)
+			print_status_header_optional(0);
+		else
+			print_status_header(0);
+		if (init_pthread_philos(philo, &const_data) == FAIL)
+		{
+			error_msg("The threads could not be created", 0);
+			return (FAIL);
+		}
+		//terminate_threads(philo, &const_data);
 		terminate_mutexes(&const_data);
 		if (ft_strcmp(argv[1], "-dt") == 0)
-		{
-			printf("└───────────────┴─────────┴─────────────────────────┴");
-			printf("───────────┘\n");
-		}
+			print_status_header_optional(1);
 		else
-			printf("└───────────────┴─────────┴─────────────────────────┘\n");
-
+			print_status_header(1);
 	}
 	return (0);
 }

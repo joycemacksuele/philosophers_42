@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 02:13:33 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/07/24 22:50:47 by whoami           ###   ########.fr       */
+/*   Updated: 2021/07/27 18:47:11 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,15 +52,15 @@ void			terminate_threads(t_philo *philo, t_const_data *const_data);
 /*
  * Printing on stdout
  */
-void			print_status_header();
-void			print_status_header_optional();
+void			print_status_header(int finished);
+void			print_status_header_optional(int finished);
 void			print_status(t_philo *philos, t_const_data *const_data, char *action);
 
 /*
  * time
  */
 unsigned long	get_current_time(void);
-unsigned long	get_diff_time(unsigned long start_time);//,
+int				get_diff_time(unsigned long start_time);//,
 													//unsigned long current_time);
 
 /*
