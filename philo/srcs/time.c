@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:22:32 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/07/27 22:00:19 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/04 18:49:49 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,9 @@
 
 int	get_diff_time(unsigned long past_time)
 {
-	//struct timeval	time;
 	unsigned long	current_time_ms;
 
 	current_time_ms = get_current_time();
-	//gettimeofday(&time, NULL);
-	//ms_current_time = ((time.tv_sec * 1000) + (time.tv_usec / 1000));
 	return (current_time_ms - past_time);
 }
 

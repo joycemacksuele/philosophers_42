@@ -6,29 +6,32 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/06 22:32:42 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/07/27 22:17:32 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/06 09:11:03 by whoami           ###   ########.fr       */
 /* ************************************************************************** */
 
 #include "philo_one.h"
 
+/* For testing purposes:
+ * pthread_mutex_lock(&const_data->print_action);
+ * printf("philo[%d] -> ", philo->position);
+ * printf("left_fork = %d ------ ", philo->left_fork);
+ * printf("right_fork = %d\n", philo->right_fork);
+ * pthread_mutex_unlock(&const_data->print_action);
+ */
+
 void philo_takes_forks(t_philo *philo, t_const_data *const_data)
 {
 	pthread_mutex_lock(&const_data->fork[philo->left_fork]);
-	pthread_mutex_lock(&const_data->fork[philo->right_fork]);
-
 	pthread_mutex_lock(&const_data->print_action);
 	print_status(philo, const_data, COLOR_BLUE"has taken left fork     ");
 	pthread_mutex_unlock(&const_data->print_action);
-
+	if (philo->right_fork == 0)
+		return ;
+	pthread_mutex_lock(&const_data->fork[philo->right_fork]);
 	pthread_mutex_lock(&const_data->print_action);
 	print_status(philo, const_data, COLOR_CYAN"has taken right fork    ");
 	pthread_mutex_unlock(&const_data->print_action);
 
-	/*pthread_mutex_lock(&const_data->print_action);
-	printf("philo[%d] -> ", philo->position);
-	printf("left_fork = %d ------ ", philo->left_fork);
-	printf("right_fork = %d\n", philo->right_fork);
-	pthread_mutex_unlock(&const_data->print_action);*/
 }
 
 /*
@@ -36,25 +39,31 @@ void philo_takes_forks(t_philo *philo, t_const_data *const_data)
  * As usleep take microseconds as it's parameter, and time_to_eat is in
  * milliseconds, conversion need to be done:
  * 1 microsecond = 1 millisecond * 1000
+ *
+ * pthread_mutex_lock(&const_data->check_death); -> so it wont eat if its dead
  */
 
 void	philo_eats(t_philo *philo, t_const_data *const_data)
 {
-	pthread_mutex_lock(&const_data->check_death);// so it wont eat if its dead
+	pthread_mutex_lock(&const_data->check_death);
+	const_data->is_eating = TRUE;
+	philo->ate = philo->ate + 1;
 	pthread_mutex_lock(&const_data->print_action);
 	print_status(philo, const_data, COLOR_GREEN"is eating               ");
-	philo->last_meal_time = get_current_time();
-
-	//printf("philo[%d]\n", philo->position);
-
 	pthread_mutex_unlock(&const_data->print_action);
-
+	philo->last_meal_time = get_current_time();
 	pthread_mutex_unlock(&const_data->check_death);
+
 	usleep(const_data->time_to_eat * ONE_MS);
-	philo->ate = philo->ate + 1;
-	//pthread_mutex_lock(&const_data->print_action);
-	//printf("philo[%d] left forks!\n", philo->position);
-	//pthread_mutex_unlock(&const_data->print_action);
+	/*while ((int)get_current_time() - (int)philo->last_meal_time < const_data->time_to_eat)
+	{
+		//printf("test\n");
+		//check_death(philo, const_data);
+		//if (const_data->one_philo_died == TRUE)
+		//	return ;
+		usleep(ONE_MS);
+	}*/
+	const_data->is_eating = FALSE;
 	pthread_mutex_unlock(&const_data->fork[philo->left_fork]);
 	pthread_mutex_unlock(&const_data->fork[philo->right_fork]);
 }
@@ -65,8 +74,6 @@ void	philo_sleeps(t_philo *philo, t_const_data *const_data)
 	print_status(philo, const_data, COLOR_YELLOW"is sleeping             ");
 	pthread_mutex_unlock(&const_data->print_action);
 	usleep(const_data->time_to_sleep * ONE_MS);
-
-	//printf("time_to_sleep = %d\n", const_data->time_to_sleep);
 }
 
 void	philo_thinks(t_philo *philo, t_const_data *const_data)
@@ -86,7 +93,11 @@ void	philo_thinks(t_philo *philo, t_const_data *const_data)
  * philo thinking → can't eat or sleep.
  *
  * Right after a philo stops eating, s/he puts down her/is fork and go sleep.
- * When a philosopher stops to sleep, s/he starts to think!!!
+ * When a philosopher stops to sleep, s/he starts to think.
+ *
+ * The first if statement with  the usleep,  is to give some time for the
+ * odd philos to grab forks and eat otherwise they never get the chance if the
+ * time_to_die is close to the time_to_eat + time_to_sleep and someone dies.
  */
 
 void	*tf_philo_actions(void *actions)
@@ -96,22 +107,19 @@ void	*tf_philo_actions(void *actions)
 
 	philo = (t_philo*)actions;
 	const_data = philo->const_data;
-	if (philo->position % 2 == 0)// if its even
-	{
-		//printf("POSITION = %d\n", philo->position);
-		usleep(10000);
-	}
+	if (philo->position % 2 == 0)
+		usleep(ONE_MS);
 	while (const_data->one_philo_died == FALSE && philo->satisfied == FALSE)
 	{
 		check_if_all_ate(philo, const_data);
 		philo_takes_forks(philo, const_data);
+		if (philo->right_fork == 0 || philo->satisfied == TRUE)
+			return (NULL);
 		philo_eats(philo, const_data);
-		if (philo->satisfied == TRUE)
+		if (const_data->one_philo_died == TRUE)
 			break ;
-			//return (0);
 		philo_sleeps(philo, const_data);
 		philo_thinks(philo, const_data);
-		//usleep(30000);
 	}
 	return (NULL);
 }

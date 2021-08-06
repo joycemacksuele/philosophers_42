@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:25:38 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/07/27 21:52:32 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/06 09:12:41 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,9 @@
  *	Creating the same amount of the "number_of_philosopher" input, of threads
  *	on the program  and calling the tf_philo_actions (tf = thread functions),
  *	whithe the index of the structure as it's only paramenter.
+ *
+ * pthread_detach(philo[i].thread); is another option to stop the threads but
+ * it's faster than the pthread_join so it did not work on this program.
  */
 
 int	init_pthread_philos(t_philo *philo, t_const_data *const_data)
@@ -36,10 +39,10 @@ int	init_pthread_philos(t_philo *philo, t_const_data *const_data)
 			error_msg("The threads could not be created", 0);
 			return (FAIL);
 		}
-		pthread_detach(philo[i].thread);
+		philo[i].last_meal_time = get_current_time();//delete it to see what changes
 		i++;
 	}
-	check_death(&philo[0], const_data);
+	check_death(philo, const_data);
 	return (SUCCESS);
 }
 
@@ -70,31 +73,8 @@ int	init_mutex_fork(t_const_data *const_data)
 	{
 		if (pthread_mutex_init(&const_data->fork[i], NULL) != 0)
 			return (FAIL);
-	//	if (pthread_mutex_init(philo[i].print_action, NULL) != 0)
-	//		return (FAIL);
 		i++;
 	}
-	return (SUCCESS);
-}
-
-int	init_args_checker_diff_time(t_const_data *const_data, char **argv)
-{
-	const_data->nb_philos = ft_atoi(argv[2]);
-	const_data->time_to_die = ft_atoi(argv[3]);
-	const_data->time_to_eat = ft_atoi(argv[4]);
-	const_data->time_to_sleep = ft_atoi(argv[5]);
-	if (argv[6])
-		const_data->times_philo_must_eat = ft_atoi(argv[6]);
-	else
-		const_data->times_philo_must_eat = FALSE;
-	const_data->start_time = get_current_time();
-	const_data->one_philo_died = FALSE;
-	//const_data->satisfied = FALSE;
-	const_data->diff_time_arg = TRUE;
-	if (const_data->nb_philos < 1 || const_data->nb_philos > 200 || const_data->time_to_die < 0 ||
-		const_data->time_to_eat < 0 || const_data->time_to_sleep < 0 ||
-		const_data->times_philo_must_eat < 0)
-		return (FAIL);
 	return (SUCCESS);
 }
 
@@ -122,7 +102,29 @@ int	init_args_checker_diff_time(t_const_data *const_data, char **argv)
  *
  */
 
-int	init_args_checker(t_const_data *const_data, char **argv)
+int	init_data_diff_time(t_const_data *const_data, char **argv)
+{
+	const_data->nb_philos = ft_atoi(argv[2]);
+	const_data->time_to_die = ft_atoi(argv[3]);
+	const_data->time_to_eat = ft_atoi(argv[4]);
+	const_data->time_to_sleep = ft_atoi(argv[5]);
+	if (argv[6])
+		const_data->times_philo_must_eat = ft_atoi(argv[6]);
+	else
+		const_data->times_philo_must_eat = FALSE;
+	const_data->start_time = get_current_time();
+	const_data->one_philo_died = FALSE;
+	const_data->is_eating = FALSE;
+	const_data->diff_time_arg = TRUE;
+	if (const_data->nb_philos < 1 || const_data->nb_philos > 200
+		|| const_data->time_to_die < 0 ||
+		const_data->time_to_eat < 0 || const_data->time_to_sleep < 0 ||
+		const_data->times_philo_must_eat < 0)
+		return (FAIL);
+	return (SUCCESS);
+}
+
+int	init_data(t_const_data *const_data, char **argv)
 {
 	const_data->nb_philos = ft_atoi(argv[1]);
 	const_data->time_to_die = ft_atoi(argv[2]);
@@ -134,24 +136,24 @@ int	init_args_checker(t_const_data *const_data, char **argv)
 		const_data->times_philo_must_eat = FALSE;
 	const_data->start_time = get_current_time();
 	const_data->one_philo_died = FALSE;
-	//const_data->satisfied = FALSE;
+	const_data->is_eating = FALSE;
 	const_data->diff_time_arg = FALSE;
-	if (const_data->nb_philos < 1 || const_data->nb_philos > 200 || const_data->time_to_die < 0 ||
+	if (const_data->nb_philos < 1 || const_data->nb_philos > 200
+		|| const_data->time_to_die < 0 ||
 		const_data->time_to_eat < 0 || const_data->time_to_sleep < 0 ||
 		const_data->times_philo_must_eat < 0)
 		return (FAIL);
-	//printf(">>>> args = %d, %d, %d, %d, %d <<<<\n\n", const_data->nb_philos, const_data->time_to_die, const_data->time_to_eat, const_data->time_to_sleep, const_data->times_philo_must_eat);
 	return (SUCCESS);
 }
 
 void	init_forks(t_philo *philo, int nb_philos, int philo_position)
 {
-	if (philo_position == 1)
+	if (philo_position == 1 && nb_philos == 1)
 	{
 		philo->left_fork = 2;
-		philo->right_fork = 1;
+		philo->right_fork = 0;
 	}
-	else if (philo_position == nb_philos)
+	else if (philo_position == nb_philos && nb_philos != 1)
 	{
 		philo->left_fork = 1;
 		philo->right_fork = nb_philos;

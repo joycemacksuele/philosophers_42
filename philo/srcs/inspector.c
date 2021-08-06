@@ -6,51 +6,56 @@
 /*   By: whoami <jfreitas@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/30 21:33:05 by whoami            #+#    #+#             */
-/*   Updated: 2021/07/27 22:01:48 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/06 08:56:22 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_one.h"
 
-/*
- * It's will update philo[0].time_to_die to -1 in case a philosofer is
- * considered dead
- */
+void	philo_dies_print(t_philo *philo, t_const_data *const_data, int i)
+{
+	pthread_mutex_lock(&const_data->check_death);
+	pthread_mutex_lock(&const_data->print_action);
+	print_status(&philo[i], const_data, COLOR_RED
+							"died                    "COLOR_RESET);
+	pthread_mutex_unlock(&const_data->print_action);
+	const_data->one_philo_died = TRUE;
+	pthread_mutex_unlock(&const_data->check_death);
+}
+
+void	philo_dies(t_philo *philo, t_const_data *const_data, int i)
+{
+	int	last_meal_diff_time;
+	int	last_meal_diff_from_start;
+
+	last_meal_diff_from_start = get_diff_time(const_data->start_time);
+	last_meal_diff_time = get_diff_time(philo[i].last_meal_time);
+	if (last_meal_diff_from_start > const_data->time_to_die
+		&& philo[i].ate == 0)
+		philo_dies_print(philo, const_data, i);
+	else if (last_meal_diff_time > const_data->time_to_die
+		&& const_data->is_eating == FALSE)
+		philo_dies_print(philo, const_data, i);
+	else if (last_meal_diff_time > const_data->time_to_die)
+		philo_dies_print(philo, const_data, i);
+}
+
 void	check_death(t_philo *philo, t_const_data *const_data)
 {
 	int	i;
-	int	last_meal_diff_time;
 
-	i = 0;
-	last_meal_diff_time = 0;
-	while (const_data->one_philo_died == FALSE)
+	while (const_data->one_philo_died == FALSE && philo->satisfied == FALSE)
 	{
 		i = 0;
-		while (i < const_data->nb_philos && const_data->one_philo_died == FALSE)
+		while (i < const_data->nb_philos && const_data->one_philo_died == FALSE
+			&& philo[i].satisfied == FALSE)
 		{
-			//printf("last meal = %ld\n", philo[i].last_meal_time);
-			last_meal_diff_time = get_diff_time(philo[i].last_meal_time);
-			if (last_meal_diff_time > const_data->time_to_die)
-			{
-				pthread_mutex_lock(&const_data->check_death);
-				pthread_mutex_lock(&const_data->print_action);
-				print_status(&philo[i], const_data, COLOR_RED
-										"died                    "COLOR_RESET);
-				//printf("last meal diff time = %d\n", last_meal_diff_time);
-				//pthread_mutex_unlock(&const_data->print_action);
-				const_data->one_philo_died = TRUE;
-				pthread_mutex_unlock(&const_data->check_death);
-			}
-		//	usleep(20000);
+			philo_dies(philo, const_data, i);
+			usleep(100);
 			i++;
 		}
 		if (philo->satisfied == TRUE || const_data->one_philo_died == TRUE)
-		{
-			//printf("ENTERED\n");
 			break ;
-		}
-		//check_if_all_ate(philo, const_data);
-	//	usleep(1000);
 	}
 }
 
@@ -61,29 +66,7 @@ void	check_death(t_philo *philo, t_const_data *const_data)
  * all philos had already eaten
  */
 
-/*void	check_if_all_ate(t_philo *philo, t_const_data *const_data)
-{
-	int	i;
-
-	i = 0;
-	if (const_data->times_philo_must_eat == FALSE)
-		return ;
-	while (i < const_data->nb_philos && philo[i].ate >= const_data->times_philo_must_eat)
-	{
-		//printf("ate = %d - last param = %d - ", philo[i].ate, const_data->times_philo_must_eat);
-		//printf("philo[%d]\n", philo[i].position);
-		i++;
-	}
-	//{
-	if (i == const_data->nb_philos)
-		const_data->satisfied = TRUE;
-		//{
-		//}
-		//i++;
-//	}
-}*/
-
-void	check_if_all_ate(t_philo *philo, t_const_data *const_data)//, t_checker *checker)
+void	check_if_all_ate(t_philo *philo, t_const_data *const_data)
 {
 	int	i;
 
@@ -93,11 +76,7 @@ void	check_if_all_ate(t_philo *philo, t_const_data *const_data)//, t_checker *ch
 	while (i < const_data->nb_philos)
 	{
 		if (philo[i].ate >= const_data->times_philo_must_eat)
-		{
-			//printf("ate = %d - last param = %d - ", philo[i].ate, const_data->times_philo_must_eat);
-			printf("philo[%d]\n", philo[i].position);
 			philo[i].satisfied = TRUE;
-		}
 		i++;
 	}
 }

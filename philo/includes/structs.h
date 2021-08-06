@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 02:13:33 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/07/27 21:52:43 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/05 23:13:22 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,14 +63,15 @@ typedef struct s_const_data
 	pthread_mutex_t	check_death;
 	pthread_mutex_t	fork[200];
 	int				one_philo_died;
-	//int				satisfied;
 	unsigned long	start_time;
+	int				all_ate;
+
+	int				is_eating;
 }					t_const_data;
 
 typedef struct s_philo
 {
 	pthread_t		thread;
-	//pthread_mutex_t	fork[200];
 	int				left_fork;
 	int				right_fork;
 	int				position;
