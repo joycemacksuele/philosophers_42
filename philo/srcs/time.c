@@ -6,11 +6,11 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:22:32 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/08/04 18:49:49 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/07 18:44:49 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_one.h"
+#include "philo.h"
 
 int	get_diff_time(unsigned long past_time)
 {
@@ -51,5 +51,5 @@ unsigned long	get_current_time(void)
 	struct timeval	time;
 
 	gettimeofday(&time, NULL);
-	return((time.tv_sec * 1000) + (time.tv_usec / 1000));
+	return ((time.tv_sec * 1000) + (time.tv_usec / 1000));
 }

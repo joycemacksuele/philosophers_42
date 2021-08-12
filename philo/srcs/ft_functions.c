@@ -6,11 +6,11 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/07 03:47:46 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/05/11 01:32:46 by jfreitas         ###   ########.fr       */
+/*   Updated: 2021/08/07 18:44:15 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_one.h"
+#include "philo.h"
 
 int	ft_atoi(char const *str)
 {
@@ -48,4 +48,3 @@ int	ft_strcmp(char const *s1, char const *s2)
 	else
 		return (*((unsigned char *)s1) - *((unsigned char *)s2));
 }
-

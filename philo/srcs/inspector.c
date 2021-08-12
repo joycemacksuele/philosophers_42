@@ -6,22 +6,28 @@
 /*   By: whoami <jfreitas@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/30 21:33:05 by whoami            #+#    #+#             */
-/*   Updated: 2021/08/06 08:56:22 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/07 18:44:29 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_one.h"
+#include "philo.h"
 
 void	philo_dies_print(t_philo *philo, t_const_data *const_data, int i)
 {
 	pthread_mutex_lock(&const_data->check_death);
 	pthread_mutex_lock(&const_data->print_action);
 	print_status(&philo[i], const_data, COLOR_RED
-							"died                    "COLOR_RESET);
+		"died                    "COLOR_RESET);
 	pthread_mutex_unlock(&const_data->print_action);
 	const_data->one_philo_died = TRUE;
 	pthread_mutex_unlock(&const_data->check_death);
 }
+
+/* try this if someone does not die when s/he should!
+ * else if (last_meal_diff_time > const_data->time_to_die
+ * 	&& const_data->is_eating == FALSE)
+ * 	philo_dies_print(philo, const_data, i);
+ */
 
 void	philo_dies(t_philo *philo, t_const_data *const_data, int i)
 {
@@ -32,9 +38,6 @@ void	philo_dies(t_philo *philo, t_const_data *const_data, int i)
 	last_meal_diff_time = get_diff_time(philo[i].last_meal_time);
 	if (last_meal_diff_from_start > const_data->time_to_die
 		&& philo[i].ate == 0)
-		philo_dies_print(philo, const_data, i);
-	else if (last_meal_diff_time > const_data->time_to_die
-		&& const_data->is_eating == FALSE)
 		philo_dies_print(philo, const_data, i);
 	else if (last_meal_diff_time > const_data->time_to_die)
 		philo_dies_print(philo, const_data, i);

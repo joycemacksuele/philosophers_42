@@ -6,14 +6,14 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 02:13:33 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/08/05 23:13:22 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/11 22:19:48 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef STRUCTS_H
 # define STRUCTS_H
 
-# include "./philo_one.h"
+# include "./philo.h"
 # include <string.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -22,10 +22,8 @@
 # include <pthread.h>
 # include <fcntl.h>
 # include <sys/stat.h>
-# include <semaphore.h>
 # include <sys/types.h>
-# include <signal.h>
-# include <stdbool.h>
+//# include <signal.h>
 
 # define FAIL -1
 # define SUCCESS 0
@@ -43,14 +41,6 @@
 # define COLOR_PINK		"\x1b[35m"// thinking
 # define COLOR_RESET	"\x1b[0m"
 
-/*typedef struct s_checker
-{
-	pthread_mutex_t	print_action;
-	pthread_mutex_t	check_death;
-	//int				one_philo_died;
-//	int				satisfied;
-}					t_checker;*/
-
 typedef struct s_const_data
 {
 	int				diff_time_arg;
@@ -59,14 +49,12 @@ typedef struct s_const_data
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				times_philo_must_eat;
+	unsigned long	start_time;
+	int				one_philo_died;
 	pthread_mutex_t	print_action;
 	pthread_mutex_t	check_death;
 	pthread_mutex_t	fork[200];
-	int				one_philo_died;
-	unsigned long	start_time;
-	int				all_ate;
 
-	int				is_eating;
 }					t_const_data;
 
 typedef struct s_philo

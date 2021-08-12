@@ -3,13 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
+/*   By: whoami <jfreitas@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/05/06 22:32:42 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/08/06 09:11:03 by whoami           ###   ########.fr       */
+/*   Created: 2021/08/07 00:10:01 by whoami            #+#    #+#             */
+/*   Updated: 2021/08/07 18:44:38 by whoami           ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_one.h"
+#include "philo.h"
 
 /* For testing purposes:
  * pthread_mutex_lock(&const_data->print_action);
@@ -19,7 +20,7 @@
  * pthread_mutex_unlock(&const_data->print_action);
  */
 
-void philo_takes_forks(t_philo *philo, t_const_data *const_data)
+void	philo_takes_forks(t_philo *philo, t_const_data *const_data)
 {
 	pthread_mutex_lock(&const_data->fork[philo->left_fork]);
 	pthread_mutex_lock(&const_data->print_action);
@@ -31,7 +32,6 @@ void philo_takes_forks(t_philo *philo, t_const_data *const_data)
 	pthread_mutex_lock(&const_data->print_action);
 	print_status(philo, const_data, COLOR_CYAN"has taken right fork    ");
 	pthread_mutex_unlock(&const_data->print_action);
-
 }
 
 /*
@@ -41,39 +41,38 @@ void philo_takes_forks(t_philo *philo, t_const_data *const_data)
  * 1 microsecond = 1 millisecond * 1000
  *
  * pthread_mutex_lock(&const_data->check_death); -> so it wont eat if its dead
+ *
+ * usleep(const_data->time_to_eat * ONE_MS); and
+ * usleep(const_data->time_to_sleep * ONE_MS); are other options but it did
+ * not work well.
  */
 
 void	philo_eats(t_philo *philo, t_const_data *const_data)
 {
 	pthread_mutex_lock(&const_data->check_death);
-	const_data->is_eating = TRUE;
 	philo->ate = philo->ate + 1;
 	pthread_mutex_lock(&const_data->print_action);
 	print_status(philo, const_data, COLOR_GREEN"is eating               ");
 	pthread_mutex_unlock(&const_data->print_action);
 	philo->last_meal_time = get_current_time();
 	pthread_mutex_unlock(&const_data->check_death);
-
-	usleep(const_data->time_to_eat * ONE_MS);
-	/*while ((int)get_current_time() - (int)philo->last_meal_time < const_data->time_to_eat)
-	{
-		//printf("test\n");
-		//check_death(philo, const_data);
-		//if (const_data->one_philo_died == TRUE)
-		//	return ;
+	while ((int)(get_current_time() - philo->last_meal_time) <
+		const_data->time_to_eat)
 		usleep(ONE_MS);
-	}*/
-	const_data->is_eating = FALSE;
 	pthread_mutex_unlock(&const_data->fork[philo->left_fork]);
 	pthread_mutex_unlock(&const_data->fork[philo->right_fork]);
 }
 
 void	philo_sleeps(t_philo *philo, t_const_data *const_data)
 {
+	unsigned int	current_time;
+
+	current_time = get_current_time();
 	pthread_mutex_lock(&const_data->print_action);
 	print_status(philo, const_data, COLOR_YELLOW"is sleeping             ");
 	pthread_mutex_unlock(&const_data->print_action);
-	usleep(const_data->time_to_sleep * ONE_MS);
+	while ((int)(get_current_time() - current_time) < const_data->time_to_sleep)
+		usleep(ONE_MS);
 }
 
 void	philo_thinks(t_philo *philo, t_const_data *const_data)
@@ -105,7 +104,7 @@ void	*tf_philo_actions(void *actions)
 	t_philo			*philo;
 	t_const_data	*const_data;
 
-	philo = (t_philo*)actions;
+	philo = (t_philo *)actions;
 	const_data = philo->const_data;
 	if (philo->position % 2 == 0)
 		usleep(ONE_MS);
