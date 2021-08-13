@@ -1,0 +1,30 @@
+name: BUILD CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: cd philo
+      run: cd philo
+    - name: make
+      run: make
+
+  build_bonus:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: cd philo_bonus
+      run: cd philo_bonus
+    - name: make
+      run: make
