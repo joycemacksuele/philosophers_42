@@ -13,9 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: cd philo
-      run: cd philo
     - name: make
+      working-directory: philo
       run: make
 
   build_bonus:
@@ -24,7 +23,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: cd philo_bonus
-      run: cd philo_bonus
     - name: make
+      working-directory: philo_bonus
       run: make
