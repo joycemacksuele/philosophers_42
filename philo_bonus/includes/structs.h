@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 02:13:33 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/08/11 22:18:46 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/14 20:39:21 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <sys/time.h>
-//# include <pthread.h>
+# include <pthread.h>
 # include <fcntl.h>
 # include <sys/stat.h>
 # include <semaphore.h>
@@ -45,17 +45,18 @@
 
 typedef struct s_const_data
 {
-	int				diff_time_arg;
 	int				nb_philos;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				times_philo_must_eat;
 	unsigned long	start_time;
+	unsigned long	time_after_fork;
 	int				one_philo_died;
 	sem_t			*print_action;
 	sem_t			*check_death;
 	sem_t			*fork;
+	int				one_time;
 }					t_const_data;
 
 typedef struct s_philo

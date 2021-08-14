@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:25:38 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/08/11 22:38:15 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/14 20:39:50 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,27 +36,6 @@
  *
  */
 
-int	init_data_diff_time(t_const_data *const_data, char **argv)
-{
-	const_data->nb_philos = ft_atoi(argv[2]);
-	const_data->time_to_die = ft_atoi(argv[3]);
-	const_data->time_to_eat = ft_atoi(argv[4]);
-	const_data->time_to_sleep = ft_atoi(argv[5]);
-	if (argv[6])
-		const_data->times_philo_must_eat = ft_atoi(argv[6]);
-	else
-		const_data->times_philo_must_eat = FALSE;
-	//const_data->start_time = get_current_time();
-	const_data->one_philo_died = FALSE;
-	const_data->diff_time_arg = TRUE;
-	if (const_data->nb_philos < 1 || const_data->nb_philos > 200
-		|| const_data->time_to_die < 0
-		|| const_data->time_to_eat < 0 || const_data->time_to_sleep < 0
-		|| const_data->times_philo_must_eat < 0)
-		return (FAIL);
-	return (SUCCESS);
-}
-
 int	init_data(t_const_data *const_data, char **argv)
 {
 	const_data->nb_philos = ft_atoi(argv[1]);
@@ -67,9 +46,9 @@ int	init_data(t_const_data *const_data, char **argv)
 		const_data->times_philo_must_eat = ft_atoi(argv[5]);
 	else
 		const_data->times_philo_must_eat = FALSE;
-	//const_data->start_time = get_current_time();
+	const_data->one_time = TRUE;
+	const_data->start_time = get_current_time();
 	const_data->one_philo_died = FALSE;
-	const_data->diff_time_arg = FALSE;
 	if (const_data->nb_philos < 1 || const_data->nb_philos > 200
 		|| const_data->time_to_die < 0
 		|| const_data->time_to_eat < 0 || const_data->time_to_sleep < 0

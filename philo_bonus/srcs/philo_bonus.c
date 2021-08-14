@@ -6,7 +6,7 @@
 /*   By: whoami <jfreitas@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/07 00:10:01 by whoami            #+#    #+#             */
-/*   Updated: 2021/08/11 22:33:47 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/14 20:49:35 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,10 @@
 void	philo_takes_forks(t_philo *philo, t_const_data *const_data)
 {
 	sem_wait(const_data->fork);
+	sem_wait(const_data->fork);
 	sem_wait(const_data->print_action);
 	print_status(philo, const_data, COLOR_BLUE"has taken a fork        ");
 	sem_post(const_data->print_action);
-	sem_wait(const_data->fork);
 	sem_wait(const_data->print_action);
 	print_status(philo, const_data, COLOR_BLUE"has taken a fork        ");
 	sem_post(const_data->print_action);

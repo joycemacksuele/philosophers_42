@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:25:38 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/08/11 22:51:56 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/14 20:43:12 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,6 @@ int	init_process_philos(t_philo *philo, t_const_data *const_data)
 	int	i;
 
 	i = 0;
-	const_data->start_time = get_current_time();
-	printf("%ld\n", const_data->start_time);
 	while (i < const_data->nb_philos && const_data->time_to_die >= 0)
 	{
 		philo[i].const_data = const_data;
@@ -47,11 +45,11 @@ int	init_process_philos(t_philo *philo, t_const_data *const_data)
 			return (FAIL);
 		if (philo[i].process == 0)
 			child_process(&philo[i]);
-		if (const_data->one_philo_died == TRUE || philo[i].satisfied == TRUE)
-			exit(FAIL);
 		usleep(ONE_MS);
 		i++;
 	}
+	terminate_process(philo, const_data);
+	terminate_semaphores(const_data);
 	return (SUCCESS);
 }
 

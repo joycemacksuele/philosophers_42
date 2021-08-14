@@ -6,7 +6,7 @@
 /*   By: whoami <jfreitas@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/06 23:59:22 by whoami            #+#    #+#             */
-/*   Updated: 2021/08/11 22:43:30 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/14 20:38:19 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,7 @@ int	init_struct(t_philo *philo, t_const_data *const_data, char **argv)
 	int		ret_init_arg;
 
 	ret_init_arg = 0;
-	if (ft_strcmp(argv[1], "-dt") == 0)
-		ret_init_arg = init_data_diff_time(const_data, argv);
-	else
-		ret_init_arg = init_data(const_data, argv);
+	ret_init_arg = init_data(const_data, argv);
 	if (ret_init_arg == FAIL)
 		return (FAIL);
 	init_philo(philo, const_data);
@@ -51,24 +48,15 @@ int	main(int argc, char **argv)
 	t_philo			philo[200];
 	t_const_data	const_data;
 
-	if ((argc >= 2 && ft_strcmp(argv[1], "-dt") != 0 && argc == 5)
-		|| argc == 6 || argc == 7)
+	if (argc >= 5 || argc == 6)
 	{
 		if (init_struct(philo, &const_data, argv) == FAIL)
 			return (FAIL);
 		init_semaphores(&const_data);
-		if (ft_strcmp(argv[1], "-dt") == 0)
-			print_status_header_optional(0);
-		else
-			print_status_header(0);
+		print_status_header(0);
 		if (init_process(philo, &const_data) == FAIL)
 			return (FAIL);
-		terminate_process(philo, &const_data);
-		terminate_semaphores(&const_data);
-		if (ft_strcmp(argv[1], "-dt") == 0)
-			print_status_header_optional(1);
-		else
-			print_status_header(1);
+		print_status_header(1);
 	}
 	else
 		error_msg("", 1);
