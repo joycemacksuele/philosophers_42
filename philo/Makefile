@@ -6,7 +6,7 @@
 #    By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/19 00:38:15 by jfreitas          #+#    #+#              #
-#    Updated: 2021/08/14 21:37:17 by whoami           ###   ########.fr        #
+#    Updated: 2021/08/14 21:53:22 by whoami           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,7 +34,6 @@ endif
 ##### FLAG #####
 CC = clang
 FLAGS = -Wall -Wextra -Werror -g -pthread -fsanitize=address
-#valgrind --tool=hegrind or valgrind --tool=drd - if any errot: mutex missing or missused
 
 ##### SRC & OBJ PATH #####
 UTILSPATH = ../philo/srcs
