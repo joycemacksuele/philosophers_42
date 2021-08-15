@@ -6,7 +6,7 @@
 /*   By: whoami <jfreitas@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/07 00:10:01 by whoami            #+#    #+#             */
-/*   Updated: 2021/08/14 21:32:05 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/14 21:47:21 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,8 @@ void	philo_eats(t_philo *philo, t_const_data *const_data)
 	sem_post(const_data->print_action);
 	sem_post(const_data->check_death);
 	philo->last_meal_time = get_current_time();
-	while ((int)(get_current_time() - philo->last_meal_time) <
-		const_data->time_to_eat)
+	while ((int)(get_current_time() - philo->last_meal_time)
+		< const_data->time_to_eat)
 		usleep(ONE_MS);
 	sem_post(const_data->fork);
 	sem_post(const_data->fork);

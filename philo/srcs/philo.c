@@ -6,7 +6,7 @@
 /*   By: whoami <jfreitas@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/07 00:10:01 by whoami            #+#    #+#             */
-/*   Updated: 2021/08/07 18:44:38 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/14 21:46:26 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,8 @@ void	philo_eats(t_philo *philo, t_const_data *const_data)
 	pthread_mutex_unlock(&const_data->print_action);
 	philo->last_meal_time = get_current_time();
 	pthread_mutex_unlock(&const_data->check_death);
-	while ((int)(get_current_time() - philo->last_meal_time) <
-		const_data->time_to_eat)
+	while ((int)(get_current_time() - philo->last_meal_time)
+		< const_data->time_to_eat)
 		usleep(ONE_MS);
 	pthread_mutex_unlock(&const_data->fork[philo->left_fork]);
 	pthread_mutex_unlock(&const_data->fork[philo->right_fork]);
