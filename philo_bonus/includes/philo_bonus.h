@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 02:13:33 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/08/11 22:34:09 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/14 21:32:22 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,7 @@ int				init_process_philos(t_philo *philo, t_const_data *const_data);
 /*
  * Philosophers actions
  */
-void			child_process(void *philos);
-//void			child_process(t_philo *philo, t_const_data *const_data);
+void			child_process(t_philo *philo, t_const_data *const_data);
 void			check_if_all_ate(t_philo *philo, t_const_data *const_data);
 void			*check_death(void *philos);
 void			terminate_process(t_philo *philo, t_const_data *const_data);

@@ -6,7 +6,7 @@
 /*   By: whoami <jfreitas@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/17 09:40:35 by whoami            #+#    #+#             */
-/*   Updated: 2021/08/11 22:47:25 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/14 21:39:52 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	print_status(t_philo *philo, t_const_data *const_data, char *action)
 		printf("philo %d │ %s%s│", philo->position, action, COLOR_RESET);
 		if (const_data->diff_time_arg == TRUE)
 		{
-			diff_time = get_current_time() - const_data->start_time;
+			diff_time = get_diff_time(const_data->start_time);
 			if (diff_time < 10)
 				printf(" %d         │", diff_time);
 			else if (diff_time < 100)

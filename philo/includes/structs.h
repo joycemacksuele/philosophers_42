@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 02:13:33 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/08/11 22:19:48 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/14 21:36:20 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 # include <fcntl.h>
 # include <sys/stat.h>
 # include <sys/types.h>
-//# include <signal.h>
+# include <signal.h>
 
 # define FAIL -1
 # define SUCCESS 0

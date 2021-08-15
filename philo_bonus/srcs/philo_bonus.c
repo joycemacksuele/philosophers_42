@@ -6,7 +6,7 @@
 /*   By: whoami <jfreitas@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/07 00:10:01 by whoami            #+#    #+#             */
-/*   Updated: 2021/08/14 20:49:35 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/14 21:32:05 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,8 @@ void	philo_eats(t_philo *philo, t_const_data *const_data)
 	sem_wait(const_data->print_action);
 	print_status(philo, const_data, COLOR_GREEN"is eating               ");
 	sem_post(const_data->print_action);
-	philo->last_meal_time = get_current_time();
 	sem_post(const_data->check_death);
+	philo->last_meal_time = get_current_time();
 	while ((int)(get_current_time() - philo->last_meal_time) <
 		const_data->time_to_eat)
 		usleep(ONE_MS);
@@ -101,15 +101,10 @@ void	philo_thinks(t_philo *philo, t_const_data *const_data)
  * time_to_die is close to the time_to_eat + time_to_sleep and someone dies.
  */
 
-//void	child_process(t_philo *philo, t_const_data *const_data)
-void	child_process(void *philos)
+void	child_process(t_philo *philo, t_const_data *const_data)
 {
 	pthread_t	death_check;
-	t_philo			*philo;
-	t_const_data	*const_data;
 
-	philo = (t_philo *)philos;
-	const_data = philo->const_data;
 	pthread_create(&death_check, NULL, check_death, philo);
 	pthread_detach(death_check);
 	if (philo->position % 2 == 0)

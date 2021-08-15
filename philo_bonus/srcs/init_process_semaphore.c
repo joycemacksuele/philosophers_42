@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:25:38 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/08/14 20:43:12 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/14 21:23:40 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int	init_process_philos(t_philo *philo, t_const_data *const_data)
 		if (philo[i].process < 0)
 			return (FAIL);
 		if (philo[i].process == 0)
-			child_process(&philo[i]);
+			child_process(&philo[i], const_data);
 		usleep(ONE_MS);
 		i++;
 	}

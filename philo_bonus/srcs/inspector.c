@@ -6,11 +6,15 @@
 /*   By: whoami <jfreitas@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/30 21:33:05 by whoami            #+#    #+#             */
-/*   Updated: 2021/08/14 20:50:34 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/14 21:31:44 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
+
+/*
+ * sem_post(const_data->print_action);
+ */
 
 void	philo_dies_print(t_philo *philo, t_const_data *const_data)
 {
@@ -18,8 +22,6 @@ void	philo_dies_print(t_philo *philo, t_const_data *const_data)
 	sem_wait(const_data->print_action);
 	print_status(philo, const_data, COLOR_RED
 		"died                    "COLOR_RESET);
-
-	sem_post(const_data->print_action);
 	const_data->one_philo_died = TRUE;
 	sem_post(const_data->check_death);
 	exit(FAIL);
@@ -37,8 +39,6 @@ void	philo_dies(t_philo *philo, t_const_data *const_data)
 		philo_dies_print(philo, const_data);
 	if (last_meal_diff_time > const_data->time_to_die)
 		philo_dies_print(philo, const_data);
-	if (const_data->one_philo_died == TRUE)
-		exit(FAIL);
 }
 
 void	*check_death(void *philos)

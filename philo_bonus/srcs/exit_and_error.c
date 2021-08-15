@@ -6,7 +6,7 @@
 /*   By: jfreitas <jfreitas@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 02:30:55 by jfreitas          #+#    #+#             */
-/*   Updated: 2021/08/12 22:07:01 by whoami           ###   ########.fr       */
+/*   Updated: 2021/08/14 20:59:50 by whoami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,8 +81,6 @@ void	error_msg(char *err_msg, int args_accepted)
 {
 	if (args_accepted)
 	{
-		printf(COLOR_YELLOW);
-		printf("Optional: -dt (flag to check status' time difference)\n");
 		printf(COLOR_GREEN);
 		printf("number_of_philosophers\n");
 		printf("time_to_die\n");
